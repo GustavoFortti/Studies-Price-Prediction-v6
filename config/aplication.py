@@ -1,7 +1,10 @@
 CONF = {
     "name": "T0001",
-    "path": "/data/treined/",
-    "market": "BRL=X",
+    "path": "data/treined/",
+    "market": {
+        "currency": "EURUSD=X",
+        "request": False
+    },
     "model": {
         "name": "LTSM",
         "split": 120,

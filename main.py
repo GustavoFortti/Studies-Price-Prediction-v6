@@ -3,7 +3,7 @@ import argparse
 
 from src.model import Model
 # from src.services.api import Api_trade
-
+import pandas as pd
 def main(args):
     mode = args.mode
     model = Model(mode)

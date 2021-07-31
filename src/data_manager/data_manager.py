@@ -11,5 +11,6 @@ class Data_manager():
         x = data.get_predictor()
         y = data.get_target()
 
+        print(x)
 
         if (mode == 'td'): sys.exit()

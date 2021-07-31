@@ -1,4 +1,5 @@
-from pathlib import Path
+import os
+
 import pandas as pd
 
 from config.aplication import CONF
@@ -22,6 +23,8 @@ class Model():
         pass
 
     def generate_structure(self):
-        Path(CONF['path'] + CONF['name'] + '/models').mkdir(parents=True, exist_ok=True)
-        Path(CONF['path'] + CONF['name'] + '/trades').mkdir(parents=True, exist_ok=True)
-        Path(CONF['path'] + CONF['name'] + '/notes.txt').touch(exist_ok=True)
+        path = CONF['path'] + CONF['name']
+
+        if (not os.path.exists(path)):
+            os.makedirs(path)
+            os.makedirs(path + "/models")
