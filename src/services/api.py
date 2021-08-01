@@ -19,6 +19,8 @@ class Api_market():
             self.data.to_csv(file)
         else:
             self.data = pd.read_csv(file, index_col='Date')
+
+        self.data = self.data.loc[:, ["Open", "High", "Low", "Close", "Volume"]]
             
 class Api_trade():
     def __init__(self, market) -> None:

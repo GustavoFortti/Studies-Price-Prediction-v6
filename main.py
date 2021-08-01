@@ -9,7 +9,7 @@ def main(args):
     model = Model(mode)
 
     if (mode == 'td'): model.data()
-    # if (mode == 'gd'): model.data(gen_data=True)
+    # if (mode == 'gd'): model.data()
     # if (mode == 'tr'): model.train()
 
     # trade = Api_trade()

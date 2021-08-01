@@ -26,11 +26,13 @@ class Data_generated():
         return pd.read_csv(self.path + '/data.csv')
 
     def generate_data(self, data, type) -> pd.DataFrame:
+        indicators = Inticators_manager(type)
+
         for i in range(self.size, 0, -self.reduce): # cria partições para o dataframe
             if (self.reduce > i): break
             ax_df = data.iloc[(i - self.reduce):i, :]
 
-            # ax_df = Inticators_manager(deepcopy(ax_df), type).data
+            ax_df = indicators.generate(ax_df)
 
             if (i == self.size): df = ax_df.iloc[::-1] # inverti as partições e depois uni elas
             else: df = df.append(ax_df.iloc[::-1])

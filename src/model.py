@@ -10,8 +10,8 @@ class Model():
         self.mode = mode
         self.generate_structure()
 
-    def data(self, gen_data: bool=False):
-        self.data = Data_manager(gen_data, self.mode)
+    def data(self):
+        self.data = Data_manager(self.mode)
 
     def train(self):
         pass
