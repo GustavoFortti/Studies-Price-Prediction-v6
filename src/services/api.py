@@ -22,16 +22,3 @@ class Api_market():
 
         self.data = self.data.loc[:, ["Open", "High", "Low", "Close", "Volume"]]
             
-class Api_trade():
-    def __init__(self, market) -> None:
-        self.data = yf.Ticker(market)
-        
-    def test(self):
-        pass
-
-    def play(self):
-        pass
-        # while (True):
-        #     print(datetime.now())
-        #     if ((datetime.now().strftime("%M") == "59") & (datetime.now().strftime("%S") in ["30", "31", "32"])):
-        #         pass

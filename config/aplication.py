@@ -7,7 +7,7 @@ CONF = {
     },
     "model": {
         "name": "LTSM",
-        "split": 120,
+        "slice": 0.01,
         "LTSM": {
             "opochs": 30
         }
@@ -15,7 +15,7 @@ CONF = {
     "data": {
         "time": "1D",
         "timesteps": 8,
-        "predict": {"columns": ["date_time", "Close", "High", "Low"]},
+        "predict": {"columns": ["Date", "Close", "High", "Low", "Open"]},
         "target": {"columns": ["High", "Low"], "categorical": 3, "description": ["0", "1", "-1"]},
         "reduce": 5
     }

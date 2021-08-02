@@ -1,3 +1,4 @@
+import os
 import sys
 from copy import deepcopy
 
@@ -12,21 +13,20 @@ class Data_generated():
         self.path = CONF['path'] + CONF['name']
         self.mode = mode
 
-        if ((self.mode == 'pr') | (self.mode == 'gd')): self.read_data()
-        else: 
-            df = Api_market().data
-            self.size = len(df)
-            self.reduce = int(self.size / CONF['data']['reduce'])
+        df = Api_market().data
+        self.size = len(df)
+        self.reduce = int(self.size / CONF['data']['reduce'])
 
-            self.predictor = self.generate_data(deepcopy(df), 'predictor')
-            self.target = self.generate_data(deepcopy(df), 'target')
-            if (self.mode == 'gd'): sys.exit()
+        if ((self.mode == 'tr') & (not os.path.isfile(self.path + '/data.csv'))): self.predictor = self.read_data()
+        else: self.predictor = self.generate_data(deepcopy(df), 'predictor')
+        self.target = self.generate_data(deepcopy(df), 'target')
+        if (self.mode == 'gd'): sys.exit()
         
     def read_data(self) -> pd.DataFrame:
-        return pd.read_csv(self.path + '/data.csv')
+        return pd.read_csv(self.path + '/data.csv', index_col='Date')
 
-    def generate_data(self, data, type) -> pd.DataFrame:
-        indicators = Inticators_manager(type)
+    def generate_data(self, data, _type) -> pd.DataFrame:
+        indicators = Inticators_manager(_type)
 
         for i in range(self.size, 0, -self.reduce): # cria partições para o dataframe
             if (self.reduce > i): break
@@ -36,12 +36,17 @@ class Data_generated():
 
             if (i == self.size): df = ax_df.iloc[::-1] # inverti as partições e depois uni elas
             else: df = df.append(ax_df.iloc[::-1])
+            if ((self.mode == "pr") | (self.mode == "td")): break
 
-        if (type == 'predictor'): df.to_csv(self.path + '/data.csv')
-        return df.iloc[::-1]
+        df = df.iloc[::-1]
+        if ((_type == 'predictor') & (self.mode == 'gd')): df.to_csv(self.path + '/data.csv')
+        return df
 
     def get_predictor(self) -> pd.DataFrame:
         return self.predictor
 
     def get_target(self) -> pd.DataFrame:
         return self.target
+
+    def get_reduce(self) -> int:
+        return self.reduce

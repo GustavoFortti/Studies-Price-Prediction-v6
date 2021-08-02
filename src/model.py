@@ -9,14 +9,12 @@ class Model():
     def __init__(self, mode: str) -> None:
         self.mode = mode
         self.generate_structure()
-
-    def data(self):
         self.data = Data_manager(self.mode)
 
     def train(self):
         pass
 
-    def test(self, init, end):
+    def test(self):
         pass
 
     def pred(self):

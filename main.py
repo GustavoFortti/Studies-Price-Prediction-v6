@@ -2,29 +2,21 @@ import time
 import argparse
 
 from src.model import Model
-# from src.services.api import Api_trade
 import pandas as pd
+
 def main(args):
     mode = args.mode
-    model = Model(mode)
+    model = Model(args.mode)
 
-    if (mode == 'td'): model.data()
-    # if (mode == 'gd'): model.data()
-    # if (mode == 'tr'): model.train()
-
-    # trade = Api_trade()
-    # if ('--te'): 
-    #     df_trade = model.test(init=0, end=10)
-    #     trade.test(df_trade)
-    # if ('--pr'): 
-    #     df_trade = model.pred()
-    #     trade.play(df_trade)
-
+    if (mode == 'tr'): model.train()
+    if (mode == 'te'): model.test(args.index)
+    if (mode == 'pr'): model.pred()
 
 if __name__ == '__main__':
     start_time = time.time()
     parser = argparse.ArgumentParser()
     parser.add_argument("-m" ,"--mode", required=True)
+    parser.add_argument("-i" ,"--index", required=False)
     args = parser.parse_args()
     main(args)
     print("--- %s seconds main ---" % (time.time() - start_time))
