@@ -1,20 +1,14 @@
+import numpy as np
 import tensorflow as tf
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential
 
+from config.aplication import CONF
 class LTSM_model():
-    def __init__(self, file, features) -> None:
-        # l_name = [str(i) + '_' + str(j) for i, j in zip(features.keys(), features.values())]
-        # name = '_'.join(l_name)
-
-        # with open('./src/Processor/Models/' + file + '/' + features['table'] + '/.models/model.txt', 'w') as f:
-        #     f.write(str(features))
-        #     f.Close()
-
-        name = 'epochs_' + str(features['epochs'])
-        self.path = './src/Processor/Models/' + file + '/' + features['table'] + '/.models/' + name +  '_lstm_model.h5'
-        self.epochs = features['epochs']
-        self.categorical = features['data']['target']['categorical']
+    def __init__(self) -> None:
+        self.epochs = CONF['model']['LTSM']['epochs']
+        self.path = './data/treined/' + CONF['name'] + '/models/' + 'epochs_' + str(self.epochs) +  '_lstm_model.h5'
+        self.categorical = CONF['data']['target']['categorical']
 
     def create(self, x_train, x_test, y_train, y_test) -> None:
         self.model = Sequential()
@@ -39,6 +33,6 @@ class LTSM_model():
     def save(self) -> None:
         self.model.save(self.path)
     
-    def predict(self, x):
+    def predict(self, x) -> np.array:
         model = tf.keras.models.load_model(self.path)
         return model.predict(x)

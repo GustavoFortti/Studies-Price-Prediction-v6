@@ -9,7 +9,7 @@ CONF = {
         "name": "LTSM",
         "slice": 0.01,
         "LTSM": {
-            "opochs": 30
+            "epochs": 30
         }
     },
     "data": {

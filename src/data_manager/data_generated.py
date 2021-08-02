@@ -17,7 +17,7 @@ class Data_generated():
         self.size = len(df)
         self.reduce = int(self.size / CONF['data']['reduce'])
 
-        if ((self.mode == 'tr') & (not os.path.isfile(self.path + '/data.csv'))): self.predictor = self.read_data()
+        if ((self.mode == 'tr') & (os.path.isfile(self.path + '/data.csv'))): self.predictor = self.read_data()
         else: self.predictor = self.generate_data(deepcopy(df), 'predictor')
         self.target = self.generate_data(deepcopy(df), 'target')
         if (self.mode == 'gd'): sys.exit()
@@ -39,7 +39,7 @@ class Data_generated():
             if ((self.mode == "pr") | (self.mode == "td")): break
 
         df = df.iloc[::-1]
-        if ((_type == 'predictor') & (self.mode == 'gd')): df.to_csv(self.path + '/data.csv')
+        if ((_type == 'predictor') & (self.mode in ['gd', 'tr'])): df.to_csv(self.path + '/data.csv')
         return df
 
     def get_predictor(self) -> pd.DataFrame:

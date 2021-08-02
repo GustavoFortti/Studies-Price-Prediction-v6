@@ -1,12 +1,9 @@
-import os
-import sys
 from copy import deepcopy
-
-from config.aplication import CONF
-
 import numpy as np
 import pandas as pd
 import ta
+
+from config.aplication import CONF
 
 from src.data_manager.indicators_analysis.generate_labels import Genlabels
 from src.data_manager.indicators_analysis.macd import Macd
@@ -21,7 +18,7 @@ class Inticators_manager():
     def __init__(self, _type) -> None:
         self.type = _type
 
-    def generate(self, df):
+    def generate(self, df) -> pd.DataFrame:
         df = deepcopy(df)
         if (self.type == 'predictor'):
             return self.prediction(df)
@@ -29,10 +26,10 @@ class Inticators_manager():
             df = self.target(df.loc[:, CONF['data']['target']['columns']])
             return self.cross_bool_cols(df, [df.columns])
 
-    def target(self, df):
+    def target(self, df) -> pd.DataFrame:
         return self.convert_col_to_bool(df, df.columns)
 
-    def prediction(self, df):
+    def prediction(self, df) -> pd.DataFrame:
 
         indicators = [
             {"name": "labels", "columns": ['High', 'Low'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},

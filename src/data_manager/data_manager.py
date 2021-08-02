@@ -12,14 +12,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 class Data_manager():
-    def __init__(self, mode: str, index: int=0) -> None:
+    def __init__(self, mode: str, index: int) -> None:
         
         data_gen = Data_generated(mode)
         x = data_gen.get_predictor()
         y = data_gen.get_target()
-
-        print(x)
-        print(y)
 
         x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
 
@@ -35,6 +32,8 @@ class Data_manager():
             self.x = x[-1:] # predição - pega apenas o ultimo bloco
 
         if (mode == 'td'): 
+            print(x)
+            print(y)
             # reports
             sys.exit()
 
@@ -50,7 +49,7 @@ class Data_manager():
 
         return [np.array(x_temp), np.array(y_temp)]
 
-    def shape_data(self, x: DataFrame, y: np.array, timesteps: int, init: int=31) -> list:
+    def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
         scaler = StandardScaler() 
         x = scaler.fit_transform(x)
 
@@ -69,3 +68,9 @@ class Data_manager():
     
     def get_train_test(self):
         return self.x_train, self.x_test, self.y_train, self.y_test
+
+    def get_x(self) -> np.array:
+        return self.x
+
+    def get_y(self) -> np.array:
+        return self.y
