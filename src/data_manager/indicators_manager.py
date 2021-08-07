@@ -21,10 +21,13 @@ class Inticators_manager():
     def generate(self, df) -> pd.DataFrame:
         df = deepcopy(df)
         if (self.type == 'predictor'):
-            return self.prediction(df)
+            # return self.prediction(df)
+            pass
         else:
             df = self.target(df.loc[:, CONF['data']['target']['columns']])
             return self.cross_bool_cols(df, [df.columns])
+        
+        return df
 
     def target(self, df) -> pd.DataFrame:
         return self.convert_col_to_bool(df, df.columns)

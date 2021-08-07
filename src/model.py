@@ -4,16 +4,17 @@ import numpy as np
 import pandas as pd
 
 from config.aplication import CONF
+from src.reports.report import Report
 from src.models.LTSM.ltsm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 
 class Model():
     def __init__(self, mode: str, index: int) -> None:
         self.model = LTSM_model
+        self.report = Report()
         self.mode = mode
         self.generate_structure()
-        data = Data_manager(self.mode, index)
-
+        data = Data_manager(self.mode, index, self.report)
 
         if (mode == 'tr'):
             x_train, x_test, y_train, y_test = data.get_train_test()

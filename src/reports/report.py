@@ -7,6 +7,13 @@ class Report():
     def __init__(self) -> None:
         pass
 
+    def set_df_origin(self, x, y):
+        x['target'] = y
+        self.df_org = x
+
+    def set_df_result(self, df):
+        self.df_res = df
+
     def validation_data(): # função de validação dos dados
         pass
 
