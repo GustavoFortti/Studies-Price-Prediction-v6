@@ -1,4 +1,5 @@
 import os
+import sys
 
 import numpy as np
 import pandas as pd
@@ -26,8 +27,9 @@ class Model():
 
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model()
-        catalyst.create(x_train, x_test, y_train, y_test)
-        catalyst.save()
+        print(x_train.shape)
+        # catalyst.create(x_train, x_test, y_train, y_test)
+        # catalyst.save()
 
     def test(self, x: np.array, y: np.array) -> None:
         catalyst = self.model()

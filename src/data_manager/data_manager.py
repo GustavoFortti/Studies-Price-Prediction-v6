@@ -17,10 +17,12 @@ class Data_manager():
         x = data_gen.get_predictor()
         y = data_gen.get_target()
 
+        print(x)
+        print(y)
         report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
 
         x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
-            
+
         if (mode == 'tr'):
             size = int(len(x) * CONF['model']['slice'])
             x = x[:-size]
@@ -33,10 +35,7 @@ class Data_manager():
             self.x = x[-1:] # predição - pega apenas o ultimo bloco
 
         if (mode == 'td'): 
-            print(x[-(1 + index):-(index)])
-            print(y[-(1 + index):-(index)])
-            # print(y)
-            # reports
+            report.set_df_end(x, y, index)
             sys.exit()
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
@@ -52,8 +51,8 @@ class Data_manager():
         return [np.array(x_temp), np.array(y_temp)]
 
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
-        # scaler = StandardScaler() 
-        # x = scaler.fit_transform(x)
+        scaler = StandardScaler() 
+        x = scaler.fit_transform(x)
 
         reshaped = []
         for i in range(timesteps, x.shape[0] + 1):
