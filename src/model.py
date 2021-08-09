@@ -27,13 +27,14 @@ class Model():
 
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model()
-        print(x_train.shape)
-        # catalyst.create(x_train, x_test, y_train, y_test)
-        # catalyst.save()
+        catalyst.create(x_train, x_test, y_train, y_test)
+        catalyst.save()
 
     def test(self, x: np.array, y: np.array) -> None:
         catalyst = self.model()
         pred = catalyst.predict(x)
+        self.report.set_pred(pred)
+        self.report.calc_test()
 
     def pred(self, x: np.array) -> None:
         catalyst = self.model()

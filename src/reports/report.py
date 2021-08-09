@@ -1,3 +1,4 @@
+from config.aplication import CONF
 import sys
 
 import pandas as pd
@@ -9,8 +10,12 @@ class Report():
     def __init__(self) -> None:
         pass
 
+    def set_pred(self, pred) -> None:
+        self.pred = pred
+
     def set_df_origin(self, x, y):
-        x['target_origin'] = y['target']
+        x = x.iloc[:, :4]
+        x['target'] = y['target']
         self.df = x
 
     def set_df_end(self, x, y, index):
@@ -18,18 +23,30 @@ class Report():
         ax_array = np.append(ax_array, y[-(1 + index):-(index)][0][0])
 
         for i, j in zip(self.df, ax_array):
-            if (self.df[i].values == j): 
+            if (round(self.df[i].values[0], 3) != round(j, 3)): 
                 print("Error target: unaligned data")
                 sys.exit()
 
-    def validation_data(): # função de validação dos dados
-        pass
+    def set_df_end_target(self, y, index):
+        if (self.df["target"].values != y[-(1 + index):-(index)][0][0]): 
+            print("Error target: unaligned data")
+            sys.exit()
 
     def compare_train(): # função de comparação do treinamento com outros trinos
         pass
 
-    def calc_test(): # função sobre todos os calculos de testes
-        pass
+    def save_test(self): # função sobre todos os calculos de testes
+        ax_df = pd.DataFrame(self.pred, columns=CONF["data"]["target"]["description"])
+        ax_df= ax_df.T
+        ax_df.columns = ["y"]
+        ax_df = ax_df.sort_values(by="y", ascending=False)
+
+        self.df['target_pred'] = ax_df.index[0]
+        self.df['target_percent_pred'] = ax_df["y"][0]
+
+        # processo
+
+        self.df.to_csv(CONF["path"] + CONF["name"] + CONF["data"]["path"] + "/" + CONF["model"]["LTSM"]["epochs"] + ".csv")
 
     def pred():
         pass

@@ -17,8 +17,6 @@ class Data_manager():
         x = data_gen.get_predictor()
         y = data_gen.get_target()
 
-        print(x)
-        print(y)
         report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
 
         x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
@@ -35,7 +33,8 @@ class Data_manager():
             self.x = x[-1:] # predição - pega apenas o ultimo bloco
 
         if (mode == 'td'): 
-            report.set_df_end(x, y, index)
+            # report.set_df_end(x, y, index)
+            report.set_df_end_target(y, index)
             sys.exit()
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:

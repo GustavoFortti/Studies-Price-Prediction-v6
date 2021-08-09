@@ -19,7 +19,11 @@ class Api_market():
             self.data.to_csv(file)
         else:
             self.data = pd.read_csv(file, index_col='Date')
-        print(self.data)
 
         self.data = self.data.loc[:, ["Open", "High", "Low", "Close", "Volume"]]
-            
+
+    def no_api(self):
+        self.data = pd.read_csv('./data/EURUSD60.csv', names=["Date", "Open", "High", "Low", "Close", "Volume"], sep='\t')
+        self.data = self.data.set_index('Date')
+        return self.data
+

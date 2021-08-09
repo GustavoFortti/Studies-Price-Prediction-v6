@@ -17,6 +17,7 @@ CONF = {
         "timesteps": 8,
         "predict": {"columns": ["Date", "Close", "High", "Low", "Open"]},
         "target": {"columns": ["High", "Low"], "categorical": 3, "description": ["0", "1", "-1"]},
-        "reduce": 5
+        "reduce": 5,
+        "path": "/models/data"
     }
 }

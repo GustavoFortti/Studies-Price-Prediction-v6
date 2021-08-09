@@ -13,7 +13,10 @@ class Data_generated():
         self.path = CONF['path'] + CONF['name']
         self.mode = mode
 
-        df = Api_market().data
+        api = Api_market()
+        df = api.data
+        # df = api.no_api()
+    
         self.size = len(df)
         self.reduce = int(self.size / CONF['data']['reduce'])
 
