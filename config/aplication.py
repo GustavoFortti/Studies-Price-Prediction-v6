@@ -1,15 +1,15 @@
 CONF = {
-    "name": "T0001",
+    "name": "T0002",
     "path": "data/treined/",
     "market": {
-        "currency": "EURUSD=X",
+        "currency": "AAPL",
         "request": False
     },
     "model": {
         "name": "LTSM",
         "slice": 0.01,
         "LTSM": {
-            "epochs": 30
+            "epochs": 10
         }
     },
     "data": {
@@ -17,7 +17,7 @@ CONF = {
         "timesteps": 8,
         "predict": {"columns": ["Date", "Close", "High", "Low", "Open"]},
         "target": {"columns": ["High", "Low"], "categorical": 3, "description": ["0", "1", "-1"]},
-        "reduce": 5,
-        "path": "/models/data"
+        "reduce": 7,
+        "path": "/models/data_predict"
     }
 }

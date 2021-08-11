@@ -21,20 +21,23 @@ class Data_manager():
 
         x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
 
+        size = int(len(x) * CONF['model']['slice'])
         if (mode == 'tr'):
-            size = int(len(x) * CONF['model']['slice'])
             x = x[:-size]
             y = y[:-size]
             self.adjust_data(x, y, CONF['data']['target']['categorical'])
         if (mode == 'te'):
-            self.x = x[-(1 + index):-(index)] # pega apenas 1 bloco para fazer a predição teste
-            self.y = y[-(1 + index):-(index)]
+            if (size > index):
+                report.print_index(index, size)
+                
+                self.x = x[-(1 + index):-(index)] # pega apenas 1 bloco para fazer a predição teste
+                self.y = y[-(1 + index):-(index)]
         if (mode == 'pr'):
             self.x = x[-1:] # predição - pega apenas o ultimo bloco
 
         if (mode == 'td'): 
             # report.set_df_end(x, y, index)
-            report.set_df_end_target(y, index)
+            # report.set_df_end_target(y, index)
             sys.exit()
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
