@@ -10,15 +10,53 @@ pd.options.mode.chained_assignment = None
 
 class Report():
     def __init__(self) -> None:
-        pass
-    
+        self.path = CONF["path"] + CONF["name"] + CONF["data"]["path"] + "/" + str(CONF["model"]["LTSM"]["epochs"])
+
+    def pred_model_report(self):
+        path = self.path + "_pred.csv"
+
+        df = None
+        if (os.path.exists(path)): df = pd.read_csv(path, index_col='Date')
+
+        self.gen_target()
+
+        self.df["money_return"] = np.zeros(len(self.df))
+
+        if (os.path.exists(path)): self.df = self.df.append(df)
+
+        self.df["right"] = self.df["target_pred"] == self.df["target"]
+
+        self.money_return()
+        # self.df.to_csv(path)
+
+    def test_model_report(self): # função sobre todos os calculos de testes
+        path = self.path + "_test.csv"
+
+        df = None
+        if (os.path.exists(path)): df = pd.read_csv(path, index_col='Date')
+
+        self.gen_target()   
+        
+        self.df["money_return"] = np.zeros(len(self.df))
+
+        if (os.path.exists(path)): self.df = self.df.append(df)
+
+        self.df["right"] = self.df["target_pred"] == self.df["target"]
+
+        self.money_return()
+
+        self.df.to_csv(path)
 
     def set_pred(self, pred) -> None:
-        self.pred = pred
+        ax_df = pd.DataFrame(pred, columns=CONF["data"]["target"]["description"])
+        ax_df= ax_df.T
+        ax_df.columns = ["target"]
+        ax_df = ax_df.sort_values(by="target", ascending=False)
+        self.pred = ax_df
 
     def set_df_origin(self, x, y):
         x = x.iloc[:, :4]
-        x['target'] = y['target']
+        x['target'] = y['target'].values
         self.df = x
 
     def set_df_end(self, x, y, index):
@@ -38,31 +76,12 @@ class Report():
     def compare_train(): # função de comparação do treinamento com outros trinos
         pass
 
-    def test_model_report(self): # função sobre todos os calculos de testes
-        path = CONF["path"] + CONF["name"] + CONF["data"]["path"] + "/" + str(CONF["model"]["LTSM"]["epochs"]) + ".csv"
-
-        df = None
-        if (os.path.exists(path)): df = pd.read_csv(path, index_col='Date')
-
-        ax_df = pd.DataFrame(self.pred, columns=CONF["data"]["target"]["description"])
-        ax_df= ax_df.T
-        ax_df.columns = ["y"]
-        ax_df = ax_df.sort_values(by="y", ascending=False)
-
-        self.df['target_pred'] = ax_df.index[0]
-        self.df['target_percent_pred'] = ax_df["y"][0]
-        self.df["money_return"] = np.zeros(len(self.df))
-
-        if (os.path.exists(path)): self.df = self.df.append(df)
-
-        self.df["target_pred"] = self.df["target_pred"].astype("int32")
+    def gen_target(self):
         self.df["target"] = self.df["target"].astype("int32")
-        self.df["right"] = self.df["target_pred"] == self.df["target"]
+        self.df['target_percent_pred'] = self.pred["target"][0]
+        self.df['target_pred'] = self.pred.index[0]
+        self.df["target_pred"] = self.df["target_pred"].astype("int32")
         self.df["target_percent_pred"] = pd.to_numeric(self.df["target_percent_pred"])
-
-        self.money_return()
-
-        self.df.to_csv(path)
 
     def money_return(self) -> None:
         if (self.df["target_pred"][0] == -1):
@@ -112,12 +131,14 @@ class Report():
         for i in percent:
             df = self.df[(self.df["target_percent_pred"] >= (i / 100) )]
             
-            print("--->")
+            print("---------------------->")
             print("\tpercentual " + str(i))
             pred = df["right"]
+            print("---------------------->ALL DATA")
             print(pred.value_counts())
             print(pred.value_counts(normalize=True))
             print(df.loc[:, ["right", "target_pred", "target"]].groupby(['target', 'target_pred']).count())
+            print("----------------------> TRADE DATA")
 
             try:
                 self.print_money_return(i)
@@ -128,22 +149,28 @@ class Report():
     def print_money_return(self, percent: int):
 
         # parametros da plataforma
-        multiplicador = 500  # multiplcador de $
+        multiplicador = 20  # multiplcador de $
         percentual = 0.12 # percentual minimo de lucro ou prejuizo da plataforma
-        percentual_max = 0.99 # percentual minimo de lucro ou prejuizo da plataforma
+        percentual_max = 0.40 # percentual minimo de lucro ou prejuizo da plataforma
         investimento = 10 # reais
-        taxa = 0.42 # relacioando a -> investimento = 10 
+        taxa = 0.006 # relacioando a -> investimento = 10 
         
         df_money = self.df[self.df["target_percent_pred"] >= (percent / 100)]
-        df_percent_range = df_money[((df_money["money_return"] > (percentual / multiplicador)) & (df_money["money_return"] < (percentual_max / multiplicador))) | (((df_money["money_return"] > -(percentual_max / multiplicador))& (df_money["money_return"]  < -(percentual / multiplicador))))]
-        trade_in = df_percent_range[df_percent_range["target"] != 0]["target"].count() # numero de trades efetuados
+        df_money['money_return'] = df_money['money_return'] * multiplicador
+        df_percent_range = df_money[((abs(df_money["money_return"]) > percentual) & (abs(df_money["money_return"]) < percentual_max )) ]
+        trade_in = df_percent_range[df_percent_range["target"] != 0]#.count() # numero de trades efetuados
+        
+        print(trade_in)
 
-        print("\n\tLucro/Prejuizo real ~= R$ : " + str(round(df_percent_range["money_return"].sum() * multiplicador * investimento - (trade_in * taxa), 2)))
-        print("\tLucro/Prejuizo sem taxas ~= R$ : " + str(round((df_percent_range["money_return"].sum() * multiplicador * investimento), 2)))
-        print("\tLucro/Prejuizo sem taxas e minimos ~= R$ : " + str(round((df_money["money_return"].sum() * multiplicador * investimento), 2)))
+        print(trade_in['right'].value_counts())
+        print(trade_in['right'].value_counts(normalize=True))
+        print(trade_in.loc[:, ["right", "target_pred", "target"]].groupby(['target', 'target_pred']).count())
 
-    def pred(self):
-        pass
+        print("Total de trades: %s" % (trade_in['target'].count()))
+        print("\nLucro/Prejuizo real ~= R$ : " + str(round(df_percent_range["money_return"].sum() * multiplicador * investimento - (trade_in['target'].count() * taxa), 2)))
+        print("Lucro/Prejuizo sem taxas ~= R$ : " + str(round((df_percent_range["money_return"].sum() * multiplicador * investimento), 2)))
+        print("Lucro/Prejuizo sem taxas e minimos/maximos ~= R$ : " + str(round((df_money["money_return"].sum() * multiplicador * investimento), 2)))
+        print("----------------------")
 
     def print_index(self, index, size):
         print('\n------------------')

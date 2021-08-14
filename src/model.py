@@ -4,13 +4,14 @@ import sys
 import numpy as np
 import pandas as pd
 
-from config.aplication import CONF
+from config.aplication import CONF, config
 from src.reports.report import Report
 from src.models.LTSM.ltsm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 
 class Model():
-    def __init__(self, mode: str, index: int=1) -> None:
+    def __init__(self, mode: str, currency: str, index: int=1) -> None:
+        self.config = config(currency)
         self.model = LTSM_model
         self.report = Report()
         self.mode = mode
@@ -41,6 +42,10 @@ class Model():
     def pred(self, x: np.array) -> None:
         catalyst = self.model()
         pred = catalyst.predict(x)
+
+        self.report.set_pred(pred)
+        self.report.pred_model_report()
+        self.report.print_analisys()
 
     def generate_structure(self) -> None:
         path = CONF['path'] + CONF['name']

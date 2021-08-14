@@ -24,8 +24,10 @@ class Inticators_manager():
             return self.prediction(df)
             pass
         else:
-            df = self.target(df.loc[:, CONF['data']['target']['columns']])
-            return self.cross_bool_cols(df, [df.columns])
+            df = self.target(df.loc[:, CONF['data']['target']['columns']]).iloc[:-1]
+
+            # if (mode != 'pred'): df = df.iloc[:-1]
+            return df #self.cross_bool_cols(df, [df.columns])
         
         return df
 

@@ -13,7 +13,7 @@ class Data_generated():
         self.path = CONF['path'] + CONF['name']
         self.mode = mode
 
-        api = Api_market()
+        api = Api_market(mode)
         df = api.data
         # df = api.no_api()
     
