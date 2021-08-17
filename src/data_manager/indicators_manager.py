@@ -15,19 +15,17 @@ from src.data_manager.indicators_analysis.sar_parabolic import Parabolic_sar
 from src.data_manager.indicators_analysis.date_time import Date_time
 
 class Inticators_manager():
-    def __init__(self, _type) -> None:
+    def __init__(self, _type: str) -> None:
         self.type = _type
 
     def generate(self, df) -> pd.DataFrame:
         df = deepcopy(df)
         if (self.type == 'predictor'):
             return self.prediction(df)
-            pass
         else:
-            df = self.target(df.loc[:, CONF['data']['target']['columns']]).iloc[:-1]
-
-            # if (mode != 'pred'): df = df.iloc[:-1]
-            return df #self.cross_bool_cols(df, [df.columns])
+            ax_df = self.target(df.loc[:, CONF['data']['target']['columns']])
+            if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
+            return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
         
         return df
 
@@ -37,21 +35,21 @@ class Inticators_manager():
     def prediction(self, df) -> pd.DataFrame:
 
         indicators = [
-            {"name": "labels", "columns": ['High', 'Low'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
-            {"name": "Macd", "columns": ['High', 'Low'], "method": Macd, "params": {'short_pd':12, 'long_pd':26, 'sig_pd':9}},
-            {"name": "StochRsi", "columns": ['High', 'Low'], "method": StochRsi, "params": {"period":14}},
-            {"name": "Dpo", "columns": ['High', 'Low'], "method": Dpo, "params": {"period":4}},
-            {"name": "Coppock", "columns": ['High', 'Low'], "method": Coppock, "params": {"wma_pd":10, "roc_long":6, "roc_short":3}},
-            {"name": "PolyInter", "columns": ['High', 'Low'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
+            {"name": "labels", "columns": ['Close', 'Open', 'High', 'Low'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
+            {"name": "Macd", "columns": ['Close', 'Open', 'High', 'Low'], "method": Macd, "params": {'short_pd':12, 'long_pd':26, 'sig_pd':9}},
+            {"name": "StochRsi", "columns": ['Close', 'Open', 'High', 'Low'], "method": StochRsi, "params": {"period":14}},
+            {"name": "Dpo", "columns": ['Close', 'Open', 'High', 'Low'], "method": Dpo, "params": {"period":4}},
+            {"name": "Coppock", "columns": ['Close', 'Open', 'High', 'Low'], "method": Coppock, "params": {"wma_pd":10, "roc_long":6, "roc_short":3}},
+            {"name": "PolyInter", "columns": ['Close', 'Open', 'High', 'Low'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
         ]
-
+    
         df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
-        df = self.convert_col_to_bool(df, ['Close', 'High', 'Low'])
+        df = self.convert_col_to_bool(df, ['Close', 'High', 'Low', 'Open'])
         df = self.indicators_analysis(df, indicators)
         df = self.col_parabolic_sar(df, ['High', 'Low'], False)
         df = self.col_date(df)
         
-        columns_cross = [['High_bool', 'Low_bool']]
+        columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
         df = self.cross_bool_cols(df, columns_cross) 
 
         return df
@@ -81,7 +79,7 @@ class Inticators_manager():
         for i in cols:
             ax_df = [ 1 if j == len(i) else -1 if j == 0 else 0 for j in df.loc[:, i].sum(axis=1)]
             if (self.type != 'target'): df["__".join(i)] = ax_df
-            else: df = pd.DataFrame(ax_df, columns=['target'], index=df.index)
+            else: df = ax_df
 
         return df
 

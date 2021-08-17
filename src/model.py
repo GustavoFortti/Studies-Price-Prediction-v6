@@ -16,6 +16,7 @@ class Model():
         self.report = Report()
         self.mode = mode
         self.generate_structure()
+
         data = Data_manager(self.mode, index, self.report)
 
         if (mode == 'tr'):
@@ -37,7 +38,7 @@ class Model():
 
         self.report.set_pred(pred)
         self.report.test_model_report()
-        self.report.print_analisys()
+        # self.report.print_analisys()
 
     def pred(self, x: np.array) -> None:
         catalyst = self.model()

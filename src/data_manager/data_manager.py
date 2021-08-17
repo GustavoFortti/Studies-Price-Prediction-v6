@@ -1,3 +1,4 @@
+from copy import deepcopy
 import sys
 
 import pandas as pd
@@ -13,16 +14,17 @@ from sklearn.preprocessing import StandardScaler
 
 class Data_manager():
     def __init__(self, mode: str, index: int, report: object) -> None:
+        self.mode = mode
         data_gen = Data_generated(mode)
         x = data_gen.get_predictor()
         y = data_gen.get_target()
-        
-        # if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
-        # else: report.set_df_origin(x[-1:], y[-1:])
+        size = int(len(x) * CONF['model']['slice'])
+
+        if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
+        else: report.set_df_origin(x[-1:], y[-1:])
 
         x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
 
-        size = int(len(x) * CONF['model']['slice'])
         if (mode == 'tr'):
             x = x[:-size]
             y = y[:-size]
@@ -46,9 +48,16 @@ class Data_manager():
         init = 31
         for i in range(0, len(x), reduce):
             x_aux, y_aux = self.shape_data(x.iloc[i + init:(i + reduce), :], y[i + init:(i + reduce)], timesteps)
-            for i, j in zip(x_aux, y_aux): 
-                x_temp.append(i) 
-                y_temp.append(j) 
+            if (self.mode != 'pr'):
+                x_aux = x_aux[:-1]
+                y_aux = y_aux[:-1]
+
+            if (x_temp == []):
+                x_temp = x_aux
+                y_temp = y_aux
+            else:
+                x_temp = np.concatenate((x_temp, x_aux))
+                y_temp = np.concatenate((y_temp, y_aux))
 
         return [np.array(x_temp), np.array(y_temp)]
 

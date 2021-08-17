@@ -14,10 +14,10 @@ class LTSM_model():
         self.model = Sequential()
 
         self.model.add(LSTM(32, input_shape=(x_train.shape[1], x_train.shape[2]), return_sequences=True))
-        self.model.add(Dropout(0.2))
+        self.model.add(Dropout(0.5))
         
         self.model.add(LSTM(32, return_sequences=False))
-        self.model.add(Dropout(0.2))
+        self.model.add(Dropout(0.5))
 
         # fourth layer and output
         self.model.add(Dense(16, activation='relu'))
@@ -28,7 +28,7 @@ class LTSM_model():
                     optimizer='adam',
                     metrics=['accuracy'])
 
-        self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=16, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=8, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
     def save(self) -> None:
         self.model.save(self.path)

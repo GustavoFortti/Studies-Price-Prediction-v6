@@ -43,7 +43,12 @@ class Report():
 
         self.df["right"] = self.df["target_pred"] == self.df["target"]
 
-        self.money_return()
+        print(self.df)
+        print(self.df['right'].value_counts())
+        print(self.df['right'].value_counts(normalize=True))
+        print(self.df.loc[:, ["right", "target_pred", "target"]].groupby(['target', 'target_pred']).count())
+        print('\n\n\n\n')
+        # self.money_return()
 
         self.df.to_csv(path)
 
@@ -55,6 +60,8 @@ class Report():
         self.pred = ax_df
 
     def set_df_origin(self, x, y):
+        print(y)
+        print(x)
         x = x.iloc[:, :4]
         x['target'] = y['target'].values
         self.df = x
@@ -77,6 +84,7 @@ class Report():
         pass
 
     def gen_target(self):
+        print(self.df["target"])
         self.df["target"] = self.df["target"].astype("int32")
         self.df['target_percent_pred'] = self.pred["target"][0]
         self.df['target_pred'] = self.pred.index[0]
