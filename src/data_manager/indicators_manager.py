@@ -99,6 +99,5 @@ class Inticators_manager():
         df = deepcopy(df)
         date = Date_time(df)
         df['weekday'] = date.Date()
-        df['hour'] = date.Time()
         return df
 

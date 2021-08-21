@@ -44,9 +44,11 @@ class Model():
         catalyst = self.model()
         pred = catalyst.predict(x)
 
-        self.report.set_pred(pred)
-        self.report.pred_model_report()
-        self.report.print_analisys()
+        print(pred)
+        sys.exit()
+        # self.report.set_pred(pred)
+        # self.report.pred_model_report()
+        # self.report.print_analisys()
 
     def generate_structure(self) -> None:
         path = CONF['path'] + CONF['name']

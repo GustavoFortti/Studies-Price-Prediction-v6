@@ -22,7 +22,6 @@ class Data_manager():
 
         if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
         else: report.set_df_origin(x[-1:], y[-1:])
-
         x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
 
         if (mode == 'tr'):
@@ -36,7 +35,7 @@ class Data_manager():
                 self.y = y[-(1 + index):-(index)]
         if (mode == 'pr'):
             self.x = x[-1:] # predição - pega apenas o ultimo bloco
-            
+        
         if (mode == 'td'): 
             # report.set_df_end(x, y, index)
             # report.set_df_end_target(y, index)
