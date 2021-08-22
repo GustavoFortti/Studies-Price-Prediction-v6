@@ -2,8 +2,6 @@ import os
 import sys
 from datetime import datetime
 
-from config.aplication import CONF
-
 import pandas as pd
 import yfinance as yf
 

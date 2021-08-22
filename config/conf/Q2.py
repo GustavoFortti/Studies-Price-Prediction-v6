@@ -1,23 +1,14 @@
 CONF = { # val_loss: 0.9285
-    "name": "AAPL" + "_Q2",
-    "path": "data/treined/",
-    "market": {
-        "currency": "AAPL",
-        "request": True
-    },
     "model": {
-        "name": "LTSM",
+        "name": "LSTM",
         "slice": 0.01,
-        "LTSM": {
+        "LSTM": {
             "epochs": 5
         }
     },
     "data": {
-        "time": "1D",
-        "timesteps": 21,
+        "timesteps": 8,
         "predict": {"columns": ["Close", "High", "Low", "Open", "Volume"]},
         "target": {"columns": ["High", "Low"], "categorical": 3, "description": ["0", "1", "-1"]},
-        "reduce": 7,
-        "path": "/models/data_predict"
     }
 }

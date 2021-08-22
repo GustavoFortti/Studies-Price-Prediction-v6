@@ -4,14 +4,13 @@ import sys
 import pandas as pd
 import numpy as np
 
-from config.aplication import CONF
 
 pd.options.mode.chained_assignment = None 
 
 class Report():
     def __init__(self, config: dict) -> None:
         self.config = config
-        self.path = config.path + config.name + config.data["path"] + "/" + str(config.model["LTSM"]["epochs"])
+        self.path = config.path + config.name + config.data["path"] + "/" + str(config.model["LSTM"]["epochs"])
 
     def pred_model_report(self):
         path = self.path + "_pred.csv"

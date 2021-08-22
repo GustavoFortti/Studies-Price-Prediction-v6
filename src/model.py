@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from src.reports.report import Report
-from src.models.LTSM.ltsm import LTSM_model
+from src.models.LSTM.ltsm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 
 class Model():

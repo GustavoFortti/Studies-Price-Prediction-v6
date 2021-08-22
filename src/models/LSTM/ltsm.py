@@ -5,7 +5,7 @@ from keras.models import Sequential
 
 class LTSM_model():
     def __init__(self, config: dict) -> None:
-        self.epochs = config.model['LTSM']['epochs']
+        self.epochs = config.model['LSTM']['epochs']
         self.path = './data/treined/' + config.name + '/models/' + 'epochs_' + str(self.epochs) +  '_lstm_model.h5'
         self.categorical = config.data['target']['categorical']
 

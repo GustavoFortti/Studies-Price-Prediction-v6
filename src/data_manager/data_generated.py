@@ -19,9 +19,6 @@ class Data_generated():
     
         self.size = len(df)
         self.reduce = int(self.size / config.data['reduce'])
-        print(df)
-        print(config.data['reduce'])
-        print(self.reduce)
 
         if (((self.mode == 'tr') | (self.mode == 'td') | (self.mode == 'te')) & (os.path.isfile(self.path + '/data.csv'))): self.predictor = self.read_data()
         elif ((self.mode != 'te')): self.predictor = self.generate_data(deepcopy(df), 'predictor')
