@@ -4,7 +4,6 @@ import sys
 import pandas as pd
 import numpy as np
 
-from config.aplication import CONF
 from src.data_manager.data_generated import Data_generated
 
 from keras.utils import to_categorical
@@ -13,21 +12,21 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 class Data_manager():
-    def __init__(self, mode: str, index: int, report: object) -> None:
+    def __init__(self, mode: str, index: int, report: object, config: dict) -> None:
         self.mode = mode
-        data_gen = Data_generated(mode)
+        data_gen = Data_generated(mode, config)
         x = data_gen.get_predictor()
         y = data_gen.get_target()
-        size = int(len(x) * CONF['model']['slice'])
+        size = int(len(x) * config.model['slice'])
 
         if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
         else: report.set_df_origin(x[-1:], y[-1:])
-        x, y = self.pre_shape_data(x, y, CONF['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
+        x, y = self.pre_shape_data(x, y, config.data['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
 
         if (mode == 'tr'):
             x = x[:-size]
             y = y[:-size]
-            self.adjust_data(x, y, CONF['data']['target']['categorical'])
+            self.adjust_data(x, y, config.data['target']['categorical'])
         if (mode == 'te'):
             if (size > index):
                 report.print_index(index, size)

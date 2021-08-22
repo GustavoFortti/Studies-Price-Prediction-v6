@@ -3,12 +3,11 @@ import tensorflow as tf
 from keras.layers import LSTM, Dense, Dropout
 from keras.models import Sequential
 
-from config.aplication import CONF
 class LTSM_model():
-    def __init__(self) -> None:
-        self.epochs = CONF['model']['LTSM']['epochs']
-        self.path = './data/treined/' + CONF['name'] + '/models/' + 'epochs_' + str(self.epochs) +  '_lstm_model.h5'
-        self.categorical = CONF['data']['target']['categorical']
+    def __init__(self, config: dict) -> None:
+        self.epochs = config.model['LTSM']['epochs']
+        self.path = './data/treined/' + config.name + '/models/' + 'epochs_' + str(self.epochs) +  '_lstm_model.h5'
+        self.categorical = config.data['target']['categorical']
 
     def create(self, x_train, x_test, y_train, y_test) -> None:
         self.model = Sequential()

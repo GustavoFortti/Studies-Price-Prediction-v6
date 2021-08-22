@@ -9,24 +9,21 @@ from config.aplication import CONF
 pd.options.mode.chained_assignment = None 
 
 class Report():
-    def __init__(self) -> None:
-        self.path = CONF["path"] + CONF["name"] + CONF["data"]["path"] + "/" + str(CONF["model"]["LTSM"]["epochs"])
+    def __init__(self, config: dict) -> None:
+        self.config = config
+        self.path = config.path + config.name + config.data["path"] + "/" + str(config.model["LTSM"]["epochs"])
 
     def pred_model_report(self):
         path = self.path + "_pred.csv"
 
         df = None
         if (os.path.exists(path)): df = pd.read_csv(path, index_col='Date')
-
-        self.gen_target()
-
-        self.df["money_return"] = np.zeros(len(self.df))
-
         if (os.path.exists(path)): self.df = self.df.append(df)
+        self.df = self.df.drop(columns=['target'])
+        self.df['pred'] = self.pred.index[0]
+        self.df['pred_percent'] = self.pred.values[0]
+        print(self.df)
 
-        self.df["right"] = self.df["target_pred"] == self.df["target"]
-
-        self.money_return()
         # self.df.to_csv(path)
 
     def test_model_report(self): # função sobre todos os calculos de testes
@@ -53,7 +50,7 @@ class Report():
         self.df.to_csv(path)
 
     def set_pred(self, pred) -> None:
-        ax_df = pd.DataFrame(pred, columns=CONF["data"]["target"]["description"])
+        ax_df = pd.DataFrame(pred, columns=self.config.data["target"]["description"])
         ax_df= ax_df.T
         ax_df.columns = ["target"]
         ax_df = ax_df.sort_values(by="target", ascending=False)

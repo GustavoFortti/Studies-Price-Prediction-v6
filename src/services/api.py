@@ -8,10 +8,10 @@ import pandas as pd
 import yfinance as yf
 
 class Api_market():
-    def __init__(self, mode) -> None:
-        currency = CONF['market']['currency']
-        path = CONF['path'] + CONF['name']
-        request = CONF['market']['request']
+    def __init__(self, mode: str, config: dict) -> None:
+        currency = config.market['currency']
+        path = config.path + config.name
+        request = config.market['request']
 
         file = "%s/%s.csv" % (path, currency)
         if ((request) | (not os.path.isfile(file)) | (mode == 'pr')):
@@ -21,7 +21,7 @@ class Api_market():
         else:
             self.data = pd.read_csv(file, index_col='Date')
 
-        self.data = self.data.loc[:, CONF['data']['predict']['columns']]
+        self.data = self.data.loc[:, config.data['predict']['columns']]
 
     def no_api(self):
         self.data = pd.read_csv('./data/EURUSD60.csv', names=["Date", "Open", "High", "Low", "Close", "Volume"], sep='\t')

@@ -1,10 +1,12 @@
 import time
 import argparse
 
+from config.aplication import Config
 from src.model import Model
 
 def main(args):
-    Model(args.mode, args.currency, int(args.index))
+    config = Config('AAPL', 'AAPL_Q1')
+    Model(config, args.mode, int(args.index))
 
 if __name__ == '__main__':
     start_time = time.time()

@@ -5,11 +5,11 @@ from config.conf.Q4 import CONF as Q4 # high - loss: 0.5530 - accuracy: 0.7248 -
 from config.conf.Q5 import CONF as Q5 # low - loss: 0.5291 - accuracy: 0.7335 - val_loss: 0.5788 - val_accuracy: 0.6953
 from config.conf.Q6 import CONF as Q6 # test
 
-CONF = Q1
+CONF = Q2
 
-class config():
-    def __init__(self, currency: str='AA') -> None:
-        self.name = currency
+class Config():
+    def __init__(self, currency, name) -> None:
+        self.name = name
         self.path = "data/treined/"
         self.market = { 
             "currency": currency, 
@@ -27,12 +27,9 @@ class config():
         self.data = {
             "time": "1D",
             "timesteps": 8,
-            "predict": {"columns": ["Date", "Close", "High", "Low", "Open"]},
+            "predict": {"columns": ["Close", "High", "Low", "Open", "Volume"]},
             "target": {"columns": ["High", "Low"], "categorical": 3, "description": ["0", "1", "-1"]},
             "reduce": 7,
-            "path": "/models/data_predict"
+            "path": "/models/data_predict",
+            "indicators": True
         }
-
-    def set_currency(self, currency):
-        self.market['currency'] = currency
-        self.name = currency

@@ -3,8 +3,6 @@ import numpy as np
 import pandas as pd
 import ta
 
-from config.aplication import CONF
-
 from src.data_manager.indicators_analysis.generate_labels import Genlabels
 from src.data_manager.indicators_analysis.macd import Macd
 from src.data_manager.indicators_analysis.rsi import StochRsi
@@ -15,7 +13,8 @@ from src.data_manager.indicators_analysis.sar_parabolic import Parabolic_sar
 from src.data_manager.indicators_analysis.date_time import Date_time
 
 class Inticators_manager():
-    def __init__(self, _type: str) -> None:
+    def __init__(self, _type: str, config: dict) -> None:
+        self.config = config
         self.type = _type
 
     def generate(self, df) -> pd.DataFrame:
@@ -23,7 +22,7 @@ class Inticators_manager():
         if (self.type == 'predictor'):
             return self.prediction(df)
         else:
-            ax_df = self.target(df.loc[:, CONF['data']['target']['columns']])
+            ax_df = self.target(df.loc[:, self.config.data['target']['columns']])
             if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
             return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
         
