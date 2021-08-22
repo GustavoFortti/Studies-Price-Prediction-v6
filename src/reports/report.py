@@ -54,6 +54,9 @@ class Report():
         ax_df.columns = ["target"]
         ax_df = ax_df.sort_values(by="target", ascending=False)
         self.pred = ax_df
+    
+    def set_pred_2(self, pred) -> None:
+        self.pred = pred[0][0]
 
     def set_df_origin(self, x, y):
         print(y)

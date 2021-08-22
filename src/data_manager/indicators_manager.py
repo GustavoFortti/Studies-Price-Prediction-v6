@@ -22,9 +22,13 @@ class Inticators_manager():
         if (self.type == 'predictor'):
             return self.prediction(df)
         else:
-            ax_df = self.target(df.loc[:, self.config.data['target']['columns']])
-            if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
-            return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
+            # ax_df = self.target(df.loc[:, self.config.data['target']['columns']])
+            # if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
+            # print(pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index))
+            # return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
+            print(pd.DataFrame(np.array([0]), columns=['target']))
+            print(df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=['Close'])))
+            return df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=['Close'])).iloc[1:, :]
         
         return df
 

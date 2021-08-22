@@ -4,7 +4,7 @@ class Config():
         self.path = "data/treined/"
         self.market = { 
             "currency": currency, 
-            "request": True 
+            "request": False 
         }
 
         self.model = {

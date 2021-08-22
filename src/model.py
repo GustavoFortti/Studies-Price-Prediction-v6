@@ -7,16 +7,18 @@ import pandas as pd
 from src.reports.report import Report
 from src.models.LSTM.ltsm import LTSM_model
 from src.data_manager.data_manager import Data_manager
+from sklearn.preprocessing import StandardScaler
 
 class Model():
     def __init__(self, config: dict, mode: str, index: int=1) -> None:
+        self.scaler = StandardScaler() 
         self.config = config
         self.model = LTSM_model
         self.report = Report(config)
         self.mode = mode
         self.generate_structure()
 
-        data = Data_manager(self.mode, index, self.report, self.config)
+        data = Data_manager(self.mode, index, self.report, self.config, self.scaler)
 
         if (mode == 'tr'):
             x_train, x_test, y_train, y_test = data.get_train_test()
@@ -28,24 +30,26 @@ class Model():
 
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model(self.config)
-        catalyst.create(x_train, x_test, y_train, y_test)
+        catalyst.create_2(x_train, x_test, y_train, y_test)
         catalyst.save()
 
     def test(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
 
-        self.report.set_pred(pred)
-        self.report.test_model_report()
+        # self.report.set_pred(pred)
+        # self.report.test_model_report()
         # self.report.print_analisys()
 
     def pred(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
-
+        print(self.scaler.inverse_transform(pred))
         print(pred)
-        self.report.set_pred(pred)
-        self.report.pred_model_report()
+
+        # print(pred)
+        # self.report.set_pred_2(pred)
+        # self.report.pred_model_report()
         # self.report.print_analisys()
         sys.exit()
 
