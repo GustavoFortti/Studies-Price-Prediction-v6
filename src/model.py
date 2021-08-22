@@ -45,7 +45,7 @@ class Model():
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
         print(self.scaler.inverse_transform(pred))
-        print(pred)
+        # print(pred)
 
         # print(pred)
         # self.report.set_pred_2(pred)

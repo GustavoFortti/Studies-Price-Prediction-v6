@@ -34,7 +34,7 @@ class Data_manager():
                 self.x = x[-(1 + index):-(index)] # pega apenas 1 bloco para fazer a predição teste
                 self.y = y[-(1 + index):-(index)]
         if (mode == 'pr'):
-            self.x = x[-2:] # predição - pega apenas o ultimo bloco
+            self.x = x[-1:] # predição - pega apenas o ultimo bloco
         
         if (mode == 'td'): 
             print(y)
@@ -62,7 +62,6 @@ class Data_manager():
         return [np.array(x_temp), np.array(y_temp)]
 
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
-        
         x = self.scaler.fit_transform(x)
         y = self.scaler.fit_transform(y)
 

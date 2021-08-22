@@ -26,9 +26,7 @@ class Inticators_manager():
             # if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
             # print(pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index))
             # return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
-            print(pd.DataFrame(np.array([0]), columns=['target']))
-            print(df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=['Close'])))
-            return df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=['Close'])).iloc[1:, :]
+            return df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config.data['target']['columns'])).iloc[1:, :]
         
         return df
 

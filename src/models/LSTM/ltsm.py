@@ -38,11 +38,11 @@ class LTSM_model():
 
 
     def create_2(self, x_train, x_test, y_train, y_test) -> None:
-        # Building the model
+        # Building the model 
         self.model = Sequential()
         # Adding a Bidirectional LSTM layer
         self.model.add(Bidirectional(LSTM(64,return_sequences=True, dropout=0.5, input_shape=(x_train.shape[1], x_train.shape[2]))))
         self.model.add(Bidirectional(LSTM(20, dropout=0.5)))
         self.model.add(Dense(1))
-        self.model.compile(loss='mse', optimizer='rmsprop')
+        self.model.compile(loss='mse', optimizer='rmsprop', metrics=['cosine_similarity'])
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=8, shuffle=True, validation_data=(x_test, y_test), verbose=1)

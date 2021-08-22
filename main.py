@@ -13,8 +13,8 @@ from config.conf.Q6 import CONF as Q6 # test
 
 def main(args):
     currency = "XOM"
-    name = currency + '_Q1'
-    config = Config(currency, name, Q1)
+    name = currency + '_Q1C'
+    config = Config(currency, name, Q1, 'C')
     Model(config, args.mode, int(args.index))
 
 if __name__ == '__main__':
