@@ -12,14 +12,18 @@ from config.conf.Q5 import CONF as Q5 # low - loss: 0.5291 - accuracy: 0.7335 - 
 from config.conf.Q6 import CONF as Q6 # test
 
 def main(args):
-    config = Config('AAPL', 'AAPL_Q2', Q2)
-    Model(config, args.mode, int(args.index))
+    currency = "XOM"
+    name = currency + '_Q1C'
+
+    config = Config(currency=currency, name=name, config=Q1, _type=1)
+    Model(config=config, mode=args.mode, index=int(args.index))
 
 if __name__ == '__main__':
     start_time = time.time()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-m" ,"--mode", help="tr - train data | te - test predict | pr - predict data | td - test data | gd - generate data", required=True)
+    parser.add_argument("-t" ,"--type-model", help="1 = Classification, 2 = Regression", required=False)
     parser.add_argument("-i" ,"--index", required=False)
     parser.add_argument("-c" ,"--currency", required=False)
     args = parser.parse_args()

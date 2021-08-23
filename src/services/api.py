@@ -8,10 +8,10 @@ import yfinance as yf
 class Api_market():
     def __init__(self, mode: str, config: dict) -> None:
         currency = config.market['currency']
-        path = config.path + config.name
+        path = config.path #+ config.name
         request = config.market['request']
 
-        file = "%s/%s.csv" % (path, currency)
+        file = path + currency + '.csv'
         if ((request) | (not os.path.isfile(file)) | (mode == 'pr')):
             data = yf.Ticker(currency)
             self.data = data.history(period="max")

@@ -9,20 +9,24 @@ from src.data_manager.data_generated import Data_generated
 from keras.utils import to_categorical
 from pandas.core.frame import DataFrame
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+
 
 class Data_manager():
-    def __init__(self, mode: str, index: int, report: object, config: dict) -> None:
+    def __init__(self, mode: str, index: int, report: object, config: dict, scaler: object) -> None:
+        self.scaler = scaler
         self.mode = mode
+        self.config = config
+
         data_gen = Data_generated(mode, config)
         x = data_gen.get_predictor()
         y = data_gen.get_target()
-        size = int(len(x) * config.model['slice'])
 
-        if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
-        else: report.set_df_origin(x[-1:], y[-1:])
+        # if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
+        # else: report.set_df_origin(x[-1:], y[-1:])
+
         x, y = self.pre_shape_data(x, y, config.data['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
 
+        size = int(len(x) * config.model['slice'])
         if (mode == 'tr'):
             x = x[:-size]
             y = y[:-size]
@@ -36,6 +40,8 @@ class Data_manager():
             self.x = x[-1:] # predição - pega apenas o ultimo bloco
         
         if (mode == 'td'): 
+            print(x)
+            print(y)
             # report.set_df_end(x, y, index)
             # report.set_df_end_target(y, index)
             sys.exit()
@@ -60,8 +66,8 @@ class Data_manager():
         return [np.array(x_temp), np.array(y_temp)]
 
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
-        scaler = StandardScaler() 
-        x = scaler.fit_transform(x)
+        x = self.scaler.fit_transform(x)
+        if (self.config.model['type'] == 2): y = self.scaler.fit_transform(y)
 
         reshaped = []
         for i in range(timesteps, x.shape[0] + 1):
@@ -74,7 +80,8 @@ class Data_manager():
 
     def adjust_data(self, x: np.array, y: np.array, categorical: dict, split: float=0.3) -> None:
         self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)
-        self.y_train, self.y_test = to_categorical(y_train, categorical), to_categorical(y_test, categorical) 
+        if (self.config.model['type'] == 1): self.y_train, self.y_test = to_categorical(y_train, categorical), to_categorical(y_test, categorical) 
+        else: self.y_train, self.y_test = y_train, y_test
 
     def get_train_test(self):
         return self.x_train, self.x_test, self.y_train, self.y_test
