@@ -6,10 +6,10 @@ from keras.models import Sequential
 class LTSM_model():
     def __init__(self, config: dict) -> None:
         self.epochs = config.model['LSTM']['epochs']
-        self.path = './data/treined/' + config.name + '/models/' + 'epochs_' + str(self.epochs) +  '_lstm_model.h5'
+        self.path = config.path + config.name + '/models/epochs_' + str(self.epochs) +  '_lstm_model.h5'
         self.categorical = config.data['target']['categorical']
 
-    def create(self, x_train, x_test, y_train, y_test) -> None:
+    def create_classification(self, x_train, x_test, y_train, y_test) -> None:
         self.model = Sequential()
 
         self.model.add(LSTM(32, input_shape=(x_train.shape[1], x_train.shape[2]), return_sequences=True))
@@ -29,15 +29,7 @@ class LTSM_model():
 
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=8, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
-    def save(self) -> None:
-        self.model.save(self.path)
-    
-    def predict(self, x) -> np.array:
-        model = tf.keras.models.load_model(self.path)
-        return model.predict(x)
-
-
-    def create_2(self, x_train, x_test, y_train, y_test) -> None:
+    def create_regression(self, x_train, x_test, y_train, y_test) -> None:
         # Building the model 
         self.model = Sequential()
         # Adding a Bidirectional LSTM layer
@@ -46,3 +38,10 @@ class LTSM_model():
         self.model.add(Dense(1))
         self.model.compile(loss='mse', optimizer='rmsprop', metrics=['cosine_similarity'])
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=8, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+
+    def save(self) -> None:
+        self.model.save(self.path)
+    
+    def predict(self, x) -> np.array:
+        model = tf.keras.models.load_model(self.path)
+        return model.predict(x)

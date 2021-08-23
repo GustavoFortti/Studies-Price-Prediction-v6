@@ -1,7 +1,7 @@
 class Config():
     def __init__(self, currency, name, config, _type) -> None:
         self.name = name
-        self.path = "data/treined/"
+        self.path = "data/treined/" + currency + '/'
         self.market = { 
             "currency": currency, 
             "request": False 
@@ -9,7 +9,7 @@ class Config():
 
         self.model = {
             "name": "LSTM",
-            "type": _type, # C = classification, R = regression
+            "type": _type, # 1 = classification, 2 = regression
             "slice": config["model"]["slice"],
             "LSTM": {
                 "epochs": config["model"]["LSTM"]["epochs"]
