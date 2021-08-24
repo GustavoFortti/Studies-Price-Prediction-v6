@@ -32,30 +32,28 @@ class Model():
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model(self.config)
 
-        create_model = catalyst.create_classification if (self.config.model['type'] == 1) else catalyst.create_regression
+        create_model = catalyst.classification if (self.config.model['type'] == 1) else catalyst.regression
         create_model(x_train, x_test, y_train, y_test)
         catalyst.save()
 
     def test(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
-
-
-        # self.report.set_pred(pred)
-        # self.report.test_model_report()
-        # self.report.print_analisys()
+        self.print_resp(pred)
 
     def pred(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
-        print(self.scaler.inverse_transform(pred))
-        # print(pred)
+        self.print_resp(pred)
 
-        # print(pred)
-        # self.report.set_pred_2(pred)
-        # self.report.pred_model_report()
-        # self.report.print_analisys()
-        sys.exit()
+    def print_resp(self, pred):
+        if (self.config.model['type'] == 1):
+            ax_df = pd.DataFrame(pred, columns=self.config.data["target"]["description"])
+            ax_df= ax_df.T
+            ax_df.columns = ["target"]
+            ax_df = ax_df.sort_values(by="target", ascending=False)
+            print(ax_df)
+        else: print(self.scaler.inverse_transform(pred))
 
     def generate_structure(self) -> None:
         path = self.config.path + self.config.name

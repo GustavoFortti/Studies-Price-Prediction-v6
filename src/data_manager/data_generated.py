@@ -21,17 +21,17 @@ class Data_generated():
         self.reduce = int(self.size / config.data['reduce'])
 
         if (((self.mode == 'tr') | (self.mode == 'td') | (self.mode == 'te')) & (os.path.isfile(self.path + 'data.csv'))): self.predictor = self.read_data()
-        elif ((self.mode != 'te')): self.predictor = self.generate_data(deepcopy(df), 'predictor')
-        self.target = self.generate_data(deepcopy(self.predictor.loc[:, config.data['predict']['columns']]), 'target')
+        elif ((self.mode != 'te')): self.predictor = self.generate_data(deepcopy(df), True)
+        self.target = self.generate_data(deepcopy(self.predictor.loc[:, config.data['predict']['columns']]), False)
         if (self.mode == 'gd'): sys.exit()
         
     def read_data(self) -> pd.DataFrame:
         return pd.read_csv(self.path + 'data.csv', index_col='Date')
 
-    def generate_data(self, data, _type) -> pd.DataFrame:
-        indicators = Inticators_manager(_type, self.config)
+    def generate_data(self, data, is_predict) -> pd.DataFrame:
+        indicators = Inticators_manager(is_predict, self.config)
 
-        if (_type == 'target'): return indicators.generate(data)
+        if (not is_predict): return indicators.generate(data)
         for i in range(self.size, 0, -self.reduce): # cria partições para o dataframe
             if (self.reduce > i): break
             ax_df = data.iloc[(i - self.reduce):i, :]
@@ -43,7 +43,7 @@ class Data_generated():
             if ((self.mode == "pr") | (self.mode == "td")): break
 
         df = df.iloc[::-1]
-        if ((_type == 'predictor') & (self.mode in ['gd', 'tr'])): df.to_csv(self.path + 'data.csv')
+        if ((is_predict) & (self.mode in ['gd', 'tr'])): df.to_csv(self.path + 'data.csv')
         return df
 
     def get_predictor(self) -> pd.DataFrame:

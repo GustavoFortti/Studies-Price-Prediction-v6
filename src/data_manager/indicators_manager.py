@@ -13,29 +13,26 @@ from src.data_manager.indicators_analysis.sar_parabolic import Parabolic_sar
 from src.data_manager.indicators_analysis.date_time import Date_time
 
 class Inticators_manager():
-    def __init__(self, _type: str, config: dict) -> None:
+    def __init__(self, is_predict: bool, config: dict) -> None:
         self.config = config
-        self.type = _type
+        self.is_predict = is_predict
 
     def generate(self, df) -> pd.DataFrame:
         df = deepcopy(df)
-        if (self.type == 'predictor'):
+        if (self.is_predict):
             return self.prediction(df)
         else:
-            if (self.config.model['type'] == 1):
-                ax_df = self.target(df.loc[:, self.config.data['target']['columns']])
-                if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
-                return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
-
-            return df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config.data['target']['columns'])).iloc[1:, :]
-        
-        return df
-
+            return self.target(df)
+            
     def target(self, df) -> pd.DataFrame:
-        return self.convert_col_to_bool(df, df.columns)
+        if (self.config.model['type'] == 1):
+            ax_df = df.loc[:, self.config.data['target']['columns']]
+            ax_df = self.convert_col_to_bool(ax_df, ax_df.columns)
+            if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
+            return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
+        return df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config.data['target']['columns'])).iloc[1:, :]
 
     def prediction(self, df) -> pd.DataFrame:
-
         indicators = [
             {"name": "labels", "columns": ['Close', 'Open', 'High', 'Low'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
             {"name": "Macd", "columns": ['Close', 'Open', 'High', 'Low'], "method": Macd, "params": {'short_pd':12, 'long_pd':26, 'sig_pd':9}},
@@ -58,12 +55,12 @@ class Inticators_manager():
 
     def convert_col_to_bool(self, df, cols) -> pd.DataFrame:
         df = deepcopy(df)
-        to_left = 0 if self.type == 'target' else -1
+        to_left = 0 if not self.is_predict else -1
 
         for i in cols:
             col = np.array(df[i])
             size = len(df[i])
-            res = [] if self.type == 'target' else [0]
+            res = [] if not self.is_predict else [0]
 
             for j in range(size + to_left):
                 if (j < size - 1):
@@ -71,7 +68,7 @@ class Inticators_manager():
                     else: res.append(1)
                 else:
                     res.append(None)
-            if (self.type == 'target'): df[i] = res
+            if (not self.is_predict): df[i] = res
             else: df[i + '_bool'] = res
 
         return df        
@@ -80,7 +77,7 @@ class Inticators_manager():
         df = deepcopy(df)
         for i in cols:
             ax_df = [ 1 if j == len(i) else -1 if j == 0 else 0 for j in df.loc[:, i].sum(axis=1)]
-            if (self.type != 'target'): df["__".join(i)] = ax_df
+            if (self.is_predict): df["__".join(i)] = ax_df
             else: df = ax_df
 
         return df

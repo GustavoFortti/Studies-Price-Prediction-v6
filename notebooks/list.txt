@@ -1,9 +1,7 @@
-- 70%
-Apple Inc. (AAPL)
-7 - 5w 2l
-Exxon Mobil Corporation (XOM)
-7 - 8w 1
-Alcoa Corporation (AA)
-15 - 15w
-Amazon.com, Inc. (AMZN)
-3 - 3
+23-08-2021
+        Classification  Regression
+close          1        53.361176
+open           1        54.857376
+high           1        54.74351
+low            1        53.650745
+high_low       1      

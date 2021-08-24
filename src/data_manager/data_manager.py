@@ -20,7 +20,10 @@ class Data_manager():
         data_gen = Data_generated(mode, config)
         x = data_gen.get_predictor()
         y = data_gen.get_target()
-
+        
+        if (mode == 'pr'):
+            print(x[-1:])
+            print(y[-1:])
         # if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
         # else: report.set_df_origin(x[-1:], y[-1:])
 

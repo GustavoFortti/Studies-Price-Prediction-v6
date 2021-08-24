@@ -12,10 +12,11 @@ from config.conf.Q5 import CONF as Q5 # low - loss: 0.5291 - accuracy: 0.7335 - 
 from config.conf.Q6 import CONF as Q6 # test
 
 def main(args):
+    ask = Q5
     currency = "XOM"
-    name = currency + '_Q1C'
+    name = currency + '_Q5C'
 
-    config = Config(currency=currency, name=name, config=Q1, _type=1)
+    config = Config(currency=currency, name=name, config=ask, _type=1)
     Model(config=config, mode=args.mode, index=int(args.index))
 
 if __name__ == '__main__':
