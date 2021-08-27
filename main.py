@@ -12,21 +12,25 @@ from config.conf.Q5 import CONF as Q5 # low - loss: 0.5291 - accuracy: 0.7335 - 
 from config.conf.Q6 import CONF as Q6 # test
 
 def main(args):
-    ask = Q5
-    currency = "XOM"
-    name = currency + '_Q5C'
-
-    config = Config(currency=currency, name=name, config=ask, _type=1)
+    
+    question = { 1: [Q1, "Q1"], 2: [Q2, "Q2"], 3: [Q3, "Q3"], 4: [Q4, "Q4"], 5: [Q5, "Q5"] }
+    currency = args.currency
+    name = currency + '_' + question[int(args.question)][1] + ("C" if (int(args.type_model) == 1) else "R")
+    print(name)
+    
+    config = Config(currency=currency, name=name, config=question[int(args.question)][0], _type=int(args.type_model))
     Model(config=config, mode=args.mode, index=int(args.index))
 
+    
 if __name__ == '__main__':
     start_time = time.time()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-m" ,"--mode", help="tr - train data | te - test predict | pr - predict data | td - test data | gd - generate data", required=True)
-    parser.add_argument("-t" ,"--type-model", help="1 = Classification, 2 = Regression", required=False)
+    parser.add_argument("-t" ,"--type_model", help="1 = Classification, 2 = Regression", required=False)
     parser.add_argument("-i" ,"--index", required=False)
     parser.add_argument("-c" ,"--currency", required=False)
+    parser.add_argument("-q" ,"--question", required=False)
     args = parser.parse_args()
     if (not args.index): args.index = 0
 

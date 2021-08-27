@@ -1,7 +1,0 @@
-23-08-2021
-        Classification  Regression
-close          1        53.361176
-open           1        54.857376
-high           1        54.74351
-low            1        53.650745
-high_low       1      

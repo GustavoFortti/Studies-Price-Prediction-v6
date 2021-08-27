@@ -6,7 +6,7 @@ import pandas as pd
 from tensorflow.python.framework import config
 
 from src.reports.report import Report
-from src.models.LSTM.ltsm import LTSM_model
+from src.models.LSTM.lstm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 from sklearn.preprocessing import StandardScaler
 
@@ -51,9 +51,14 @@ class Model():
             ax_df = pd.DataFrame(pred, columns=self.config.data["target"]["description"])
             ax_df= ax_df.T
             ax_df.columns = ["target"]
-            ax_df = ax_df.sort_values(by="target", ascending=False)
-            print(ax_df)
-        else: print(self.scaler.inverse_transform(pred))
+            out = ax_df.sort_values(by="target", ascending=False)
+            print(out)
+        else: 
+            out = self.scaler.inverse_transform(pred)
+            print(out)
+
+        f = open("./notebooks/out.txt", 'a')
+        f.write(self.config.name + ' - ' + str(out) + ' - ' + str(self.config.data['target']['columns']) + '\n')
 
     def generate_structure(self) -> None:
         path = self.config.path + self.config.name
