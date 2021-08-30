@@ -36,10 +36,6 @@ class Inticators_manager():
     def prediction(self, df) -> pd.DataFrame:
         indicators = [
             {"name": "labels", "columns": ['Close', 'Open', 'High', 'Low'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
-            {"name": "Macd", "columns": ['Close', 'Open', 'High', 'Low'], "method": Macd, "params": {'short_pd':12, 'long_pd':26, 'sig_pd':9}},
-            {"name": "StochRsi", "columns": ['Close', 'Open', 'High', 'Low'], "method": StochRsi, "params": {"period":14}},
-            {"name": "Dpo", "columns": ['Close', 'Open', 'High', 'Low'], "method": Dpo, "params": {"period":4}},
-            {"name": "Coppock", "columns": ['Close', 'Open', 'High', 'Low'], "method": Coppock, "params": {"wma_pd":10, "roc_long":6, "roc_short":3}},
             {"name": "PolyInter", "columns": ['Close', 'Open', 'High', 'Low'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
         ]
     
