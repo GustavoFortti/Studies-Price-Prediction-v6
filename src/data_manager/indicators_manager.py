@@ -21,6 +21,7 @@ class Inticators_manager():
         df = deepcopy(df)
         if (self.is_predict):
             return self.prediction(df)
+            # return df
         else:
             return self.target(df)
             

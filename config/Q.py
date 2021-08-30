@@ -1,4 +1,4 @@
-CONF = { # val_loss: 0.9285
+CONF_1V1 = {
     "model": {
         "name": "LSTM",
         "slice": 0.01,
@@ -7,8 +7,9 @@ CONF = { # val_loss: 0.9285
         }
     },
     "data": {
-        "timesteps": 17,
+        "timesteps": 8,
+        "indicators": "",
         "predict": {"columns": ["Close", "High", "Low", "Open", "Volume"]},
-        "target": {"columns": ["High", "Low"], "categorical": 3, "description": ["0", "1", "-1"]},
+        "target": {"columns": ["Close"], "categorical": 2, "description": ["0", "1"]},
     }
 }

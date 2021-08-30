@@ -20,7 +20,7 @@ class Data_generated():
         self.size = len(df)
         self.reduce = int(self.size / config.data['reduce'])
 
-        if (((self.mode == 'tr') | (self.mode == 'td') | (self.mode == 'te')) & (os.path.isfile(self.path + 'data.csv'))): self.predictor = self.read_data()
+        if ((self.mode in ['tr', 'td', 'te'])) & (os.path.isfile(self.path + 'data.csv')): self.predictor = self.read_data()
         elif ((self.mode != 'te')): self.predictor = self.generate_data(deepcopy(df), True)
         self.target = self.generate_data(deepcopy(self.predictor.loc[:, config.data['predict']['columns']]), False)
         if (self.mode == 'gd'): sys.exit()
@@ -40,7 +40,7 @@ class Data_generated():
 
             if (i == self.size): df = ax_df.iloc[::-1] # inverti as partições e depois uni elas
             else: df = df.append(ax_df.iloc[::-1])
-            if ((self.mode == "pr") | (self.mode == "td")): break
+            if (self.mode in ["pr", "td"]): break
 
         df = df.iloc[::-1]
         if ((is_predict) & (self.mode in ['gd', 'tr'])): df.to_csv(self.path + 'data.csv')

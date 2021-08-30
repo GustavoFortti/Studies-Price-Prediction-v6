@@ -66,7 +66,6 @@ class Model():
         if (not os.path.exists(path)):
             os.makedirs(path)
             os.makedirs(path + "/models")
-            os.makedirs(path + "/models/data_predict")
             os.makedirs(path + "/config")
 
             f = open(path + '/config/aplication.py', 'w')

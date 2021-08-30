@@ -6,7 +6,7 @@ import numpy as np
 
 from src.data_manager.data_generated import Data_generated
 
-from keras.utils import to_categorical
+import tensorflow as tf
 from pandas.core.frame import DataFrame
 from sklearn.model_selection import train_test_split
 
@@ -21,9 +21,12 @@ class Data_manager():
         x = data_gen.get_predictor()
         y = data_gen.get_target()
         
-        if (mode == 'pr'):
-            print(x[-1:])
-            print(y[-1:])
+        if (mode in ['pr', 'te']):
+            print(x[-(2 + index):-(1 + index)])
+            print(y[-(2 + index):-(1 + index)])
+            
+            # print(x[-1:])
+            # print(y[-1:])
         # if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
         # else: report.set_df_origin(x[-1:], y[-1:])
 
@@ -45,6 +48,7 @@ class Data_manager():
         if (mode == 'td'): 
             print(x)
             print(y)
+            print(x.shape)
             # report.set_df_end(x, y, index)
             # report.set_df_end_target(y, index)
             sys.exit()
@@ -83,7 +87,7 @@ class Data_manager():
 
     def adjust_data(self, x: np.array, y: np.array, categorical: dict, split: float=0.3) -> None:
         self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)
-        if (self.config.model['type'] == 1): self.y_train, self.y_test = to_categorical(y_train, categorical), to_categorical(y_test, categorical) 
+        if (self.config.model['type'] == 1): self.y_train, self.y_test = tf.keras.utils.to_categorical(y_train, categorical), tf.keras.utils.to_categorical(y_test, categorical) 
         else: self.y_train, self.y_test = y_train, y_test
 
     def get_train_test(self):
