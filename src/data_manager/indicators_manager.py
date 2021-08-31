@@ -47,7 +47,7 @@ class Inticators_manager():
         
         columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
         df = self.cross_bool_cols(df, columns_cross) 
-
+        
         return df
 
     def convert_col_to_bool(self, df, cols) -> pd.DataFrame:
