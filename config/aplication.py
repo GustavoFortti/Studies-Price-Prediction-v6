@@ -21,7 +21,7 @@ class Config():
             "timesteps": config["data"]["timesteps"],
             "predict": config["data"]["predict"],
             "target": config["data"]["target"],
-            "reduce": 7,
+            "reduce": 1,
             "path": "/models/data_predict",
             "indicators": True
         }
