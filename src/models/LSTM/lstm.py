@@ -39,8 +39,6 @@ class LTSM_model():
         self.model.add(Dropout(0.5))
         self.model.add(LSTM(121, return_sequences=False))
         self.model.add(Dropout(0.5))
-        # self.model.add(LSTM(121, return_sequences=False))
-        # self.model.add(Dropout(0.5))
 
         self.model.add(Dense(32, activation='softmax'))
         self.model.add(Dense(20, activation='relu'))
@@ -49,7 +47,7 @@ class LTSM_model():
 
   
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=20, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=100, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
     def save(self) -> None:
         self.model.save(self.path)
