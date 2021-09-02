@@ -32,7 +32,6 @@ class LTSM_model():
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=28, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
     def regression(self, x_train, x_test, y_train, y_test) -> None:
-        
         self.model = Sequential()
 
         self.model.add(LSTM(242, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
@@ -47,7 +46,7 @@ class LTSM_model():
 
   
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=100, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
     def save(self) -> None:
         self.model.save(self.path)

@@ -39,11 +39,11 @@ class Data_manager():
             self.adjust_data(x, y, config.data['target']['categorical'])
         if (mode == 'te'):
             if (size > index):
-                report.print_index(index, size)
-                self.x = x[-(1 + index):-(index)] # pega apenas 1 bloco para fazer a predição teste
+                # report.print_index(index, size)
+                self.x = x[-(1 + index):-(index)] 
                 self.y = y[-(1 + index):-(index)]
         if (mode == 'pr'):
-            self.x = x[-1:] # predição - pega apenas o ultimo bloco
+            self.x = x[-1:] 
         
         if (mode == 'td'): 
             print(x)
