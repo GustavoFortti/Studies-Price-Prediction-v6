@@ -3,7 +3,7 @@ CONF = { # loss: 0.6299 - accuracy: 0.6437 - val_loss: 0.6396 - val_accuracy: 0.
         "name": "LSTM",
         "slice": 0.01,
         "LSTM": {
-            "epochs": 35
+            "epochs": 360
         }
     },
     "data": {

@@ -56,7 +56,8 @@ class Data_manager():
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
         x_temp = []
         y_temp = []
-        init = 31
+        init = 100
+        
         for i in range(0, len(x), reduce):
             x_aux, y_aux = self.shape_data(x.iloc[i + init:(i + reduce), :], y[i + init:(i + reduce)], timesteps)
             if (self.mode != 'pr'):

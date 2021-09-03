@@ -11,7 +11,6 @@ from config.conf.Q4 import CONF as Q4 # high - loss: 0.5530 - accuracy: 0.7248 -
 from config.conf.Q5 import CONF as Q5 # low - loss: 0.5291 - accuracy: 0.7335 - val_loss: 0.5788 - val_accuracy: 0.6953
 
 def main(args):
-    
     question = { 1: [Q1, "Q1"], 2: [Q2, "Q2"], 3: [Q3, "Q3"], 4: [Q4, "Q4"], 5: [Q5, "Q5"] }
 
     currency = args.currency
