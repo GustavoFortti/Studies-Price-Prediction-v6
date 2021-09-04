@@ -10,7 +10,7 @@ pd.options.mode.chained_assignment = None
 class Report():
     def __init__(self, config: dict) -> None:
         self.config = config
-        self.path = config.path + config.name + config.data["path"] + "/" + str(config.model["LSTM"]["epochs"])
+        self.path = config['path'] + config['name'] + config['data']["path"] + "/" + str(config['model']["LSTM"]["epochs"])
 
     def pred_model_report(self):
         path = self.path + "_pred.csv"
@@ -49,7 +49,7 @@ class Report():
         self.df.to_csv(path)
 
     def set_pred(self, pred) -> None:
-        ax_df = pd.DataFrame(pred, columns=self.config.data["target"]["description"])
+        ax_df = pd.DataFrame(pred, columns=self.config['data']["target"]["description"])
         ax_df= ax_df.T
         ax_df.columns = ["target"]
         ax_df = ax_df.sort_values(by="target", ascending=False)

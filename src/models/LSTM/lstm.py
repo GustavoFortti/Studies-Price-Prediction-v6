@@ -8,10 +8,10 @@ from keras import backend as K
 
 class LTSM_model():
     def __init__(self, config: dict) -> None:
-        self.epochs = config.model['LSTM']['epochs']
+        self.epochs = config['model']['LSTM']['epochs']
         self.name = 'M1'
-        self.path = config.path + config.name + '/models/epochs_' + str(self.epochs) + '_' + self.name +  '_lstm_model'
-        self.categorical = config.data['target']['categorical']
+        self.path = config['path'] + config['name'] + '/models/epochs_' + str(self.epochs) + '_' + self.name +  '_lstm_model'
+        self.categorical = config['data']['target']['categorical']
 
     def classification(self, x_train, x_test, y_train, y_test) -> None:
         self.model = Sequential()

@@ -26,12 +26,19 @@ class Inticators_manager():
             return self.target(df)
             
     def target(self, df) -> pd.DataFrame:
-        if (self.config.model['type'] == 1):
-            ax_df = df.loc[:, self.config.data['target']['columns']]
+        if (self.config['model']['type'] == 1):
+            ax_df = df.loc[:, self.config['data']['target']['columns']]
             ax_df = self.convert_col_to_bool(ax_df, ax_df.columns)
             if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
             return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
-        return df.loc[:, self.config.data['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config.data['target']['columns'])).iloc[1:, :]
+        
+        print(self.config['data']['target']['columns'])
+        print(self.config['data']['target']['columns'])
+        print(self.config['data']['target']['columns'])
+        print(self.config['data']['target']['columns'])
+        print(self.config['data']['target']['columns'])
+        print(df.loc[:, self.config['data']['target']['columns']])
+        return df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns'])).iloc[1:, :]
 
     def prediction(self, df) -> pd.DataFrame:
         indicators = [

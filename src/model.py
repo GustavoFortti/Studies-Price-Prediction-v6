@@ -17,7 +17,6 @@ class Model():
         self.model = LTSM_model
         self.report = Report(config)
         self.mode = mode
-        self.generate_structure()
 
         data = Data_manager(self.mode, index, self.report, self.config, self.scaler)
 
@@ -32,7 +31,7 @@ class Model():
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model(self.config)
 
-        create_model = catalyst.classification if (self.config.model['type'] == 1) else catalyst.regression
+        create_model = catalyst.classification if (self.config['model']['type'] == 1) else catalyst.regression
         create_model(x_train, x_test, y_train, y_test)
         catalyst.save()
 
@@ -47,8 +46,8 @@ class Model():
         self.print_resp(pred)
 
     def print_resp(self, pred):
-        if (self.config.model['type'] == 1):
-            ax_df = pd.DataFrame(pred, columns=self.config.data["target"]["description"])
+        if (self.config['model']['type'] == 1):
+            ax_df = pd.DataFrame(pred, columns=self.config['data']["target"]["description"])
             ax_df= ax_df.T
             ax_df.columns = ["target"]
             out = ax_df.sort_values(by="target", ascending=False)
@@ -58,16 +57,4 @@ class Model():
             print(out)
 
         f = open("./notebooks/out.txt", 'a')
-        f.write(self.config.name + ' - ' + str(out) + ' - ' + str(self.config.data['target']['columns']) + '\n')
-
-    def generate_structure(self) -> None:
-        path = self.config.path + self.config.name
-
-        if (not os.path.exists(path)):
-            os.makedirs(path)
-            os.makedirs(path + "/models")
-            os.makedirs(path + "/config")
-
-            f = open(path + '/config/aplication.py', 'w')
-            f.write("CONF = " + str(self.config))
-            f.close()
+        f.write(self.config['name'] + ' - ' + str(out) + ' - ' + str(self.config['data']['target']['columns']) + '\n')
