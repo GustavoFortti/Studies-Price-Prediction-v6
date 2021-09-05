@@ -1,11 +1,7 @@
-import os
-import sys
-
 import numpy as np
-import pandas as pd
 
-from src.reports.report import Report
 from src.reports.data_report import Data_report
+from src.reports.pred_report import Pred_report
 from src.models.LSTM.lstm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 from sklearn.preprocessing import StandardScaler
@@ -17,19 +13,15 @@ class Model():
 
         self.scaler = StandardScaler() 
         self.model = LTSM_model
-
-        self.report = Report(config)
-        self.data_report = Data_report(config)
+        self.data_report = Data_report(config, self.scaler, mode)
+        self.pred_report = Pred_report(config, self.scaler, mode)
 
         data = Data_manager(self.mode, index, self.data_report, self.config, self.scaler)
 
         if (mode == 'tr'):
             x_train, x_test, y_train, y_test = data.get_train_test()
             self.train(x_train, x_test, y_train, y_test)
-        elif (mode == 'te'):
-            self.test(data.get_x())
-        elif (mode == 'pr'):
-            self.pred(data.get_x())
+        else: self.pred(data.get_x())
 
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model(self.config)
@@ -38,26 +30,7 @@ class Model():
         create_model(x_train, x_test, y_train, y_test)
         catalyst.save()
 
-    def test(self, x: np.array) -> None:
-        catalyst = self.model(self.config)
-        pred = catalyst.predict(x)
-        self.print_resp(pred)
-
     def pred(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
-        self.print_resp(pred)
-
-    def print_resp(self, pred):
-        if (self.config['model']['type'] == 1):
-            ax_df = pd.DataFrame(pred, columns=self.config['data']["target"]["description"])
-            ax_df= ax_df.T
-            ax_df.columns = ["target"]
-            out = ax_df.sort_values(by="target", ascending=False)
-            print(out)
-        else: 
-            out = self.scaler.inverse_transform(pred)
-            print(out)
-
-        f = open("./notebooks/out.txt", 'a')
-        f.write(self.config['name'] + ' - ' + str(out) + ' - ' + str(self.config['data']['target']['columns']) + '\n')
+        self.pred_report.print_resp(pred)

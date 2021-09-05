@@ -4,10 +4,6 @@ import pandas as pd
 import ta
 
 from src.data_manager.indicators_analysis.generate_labels import Genlabels
-from src.data_manager.indicators_analysis.macd import Macd
-from src.data_manager.indicators_analysis.rsi import StochRsi
-from src.data_manager.indicators_analysis.dpo import Dpo
-from src.data_manager.indicators_analysis.coppock import Coppock
 from src.data_manager.indicators_analysis.poly_interpolation import PolyInter
 from src.data_manager.indicators_analysis.sar_parabolic import Parabolic_sar
 from src.data_manager.indicators_analysis.date_time import Date_time
@@ -32,9 +28,6 @@ class Inticators_manager():
             if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
             return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
         
-        print(self.config['data']['target']['columns'])
-        print(df.loc[:, self.config['data']['target']['columns']])
-        print(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns']))
         return df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns'])).iloc[1:, :]
 
     def prediction(self, df) -> pd.DataFrame:

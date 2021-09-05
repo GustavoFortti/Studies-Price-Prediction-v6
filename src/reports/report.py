@@ -72,6 +72,7 @@ class Report():
         for i, j in zip(self.df, ax_array):
             if (round(self.df[i].values[0], 3) != round(j, 3)): 
                 print("Error target: unaligned data")
+                print('1')
                 sys.exit()
 
     def set_df_end_target(self, y, index):

@@ -12,65 +12,40 @@ from sklearn.model_selection import train_test_split
 
 
 class Data_manager():
-    def __init__(self, mode: str, index: int, report: object, config: dict, scaler: object) -> None:
+    def __init__(self, mode: str, index: int, data_report: object, config: dict, scaler: object) -> None:
         self.scaler = scaler
         self.mode = mode
         self.config = config
 
         data_gen = Data_generated(mode, config)
-        x = data_gen.get_predictor()
-        y = data_gen.get_target()
+        x, y = data_gen.get_predictor(), data_gen.get_target()
         
-        if (mode in ['pr', 'te']):
-            print(x[-(2 + index):-(1 + index)])
-            print(y[-(2 + index):-(1 + index)])
-            
-            # print(x[-1:])
-            # print(y[-1:])
-        if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
-        else: report.set_df_origin(x[-1:], y[-1:])
+        data_report.set_df_origin(x, y)
 
-        x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
+        x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
         size = int(len(x) * config['model']['slice'])
-        if (mode == 'tr'):
-            x = x[:-size]
-            y = y[:-size]
-            # print(x)
-            self.adjust_data(x, y, config['data']['target']['description'])
-            # sys.exit()
-        if (mode == 'te'):
-            if (size > index):
-                # report.print_index(index, size)
-                self.x = x[-(1 + index):-(index)] 
-                self.y = y[-(1 + index):-(index)]
-        if (mode == 'pr'):
-            self.x = x[-1:] 
         
-        if (mode == 'td'): 
-            print(x)
-            print(y)
-            print(x.shape)
-            # report.set_df_end(x, y, index)
-            # report.set_df_end_target(y, index)
-            sys.exit()
+        self.x, self.y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
+        if (mode == 'tr'): self.adjust_data(self.x, self.y, config['data']['target']['description'])
+        
+        data_report.set_df_end(x, y, index)
+
+    def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
+        if (size < index): sys.exit()
+        return df[:-size] if 'tr' == mode else (df[-(1 + index):-(index)] if 'te' == mode else df[-1:]) #  df[-1:] - 'pr' == mode
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
-        x_temp = []
-        y_temp = []
+        x_temp, y_temp = [], []
         init = 100
         
         for i in range(0, len(x), reduce):
             x_aux, y_aux = self.shape_data(x.iloc[i + init:(i + reduce), :], y[i + init:(i + reduce)], timesteps)
             if (self.mode != 'pr'):
-                x_aux = x_aux[:-1]
-                y_aux = y_aux[:-1]
-
+                x_aux, y_aux = x_aux[:-1], y_aux[:-1]
             if (x_temp == []):
-                x_temp = x_aux
-                y_temp = y_aux
+                x_temp, y_temp = x_aux, y_aux
             else:
-                x_temp = np.concatenate((x_temp, x_aux))
-                y_temp = np.concatenate((y_temp, y_aux))
+                x_temp, y_temp = np.concatenate((x_temp, x_aux)), np.concatenate((y_temp, y_aux))
 
         return [np.array(x_temp), np.array(y_temp)]
 
@@ -82,10 +57,7 @@ class Data_manager():
         for i in range(timesteps, x.shape[0] + 1):
             reshaped.append(x[i - timesteps:i])
 
-        x = np.array(reshaped)
-        y = np.array(y[timesteps-1:])
-
-        return [x, y]
+        return [np.array(reshaped), np.array(y[timesteps-1:])]
 
     def adjust_data(self, x: np.array, y: np.array, categorical: dict, split: float=0.3) -> None:
         self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)

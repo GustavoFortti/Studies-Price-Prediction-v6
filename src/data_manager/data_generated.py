@@ -23,7 +23,9 @@ class Data_generated():
         if ((self.mode in ['tr', 'td', 'te'])) & (os.path.isfile(self.path + 'data.csv')): self.predictor = self.read_data()
         elif ((self.mode != 'te')): self.predictor = self.generate_data(deepcopy(df), True)
         self.target = self.generate_data(deepcopy(self.predictor.loc[:, config['data']['predict']['columns']]), False)
-        if (self.mode == 'gd'): sys.exit()
+        if (self.mode == 'gd'): 
+            sys.exit()
+            print('1')
         
     def read_data(self) -> pd.DataFrame:
         return pd.read_csv(self.path + 'data.csv', index_col='Date')
