@@ -33,11 +33,8 @@ class Inticators_manager():
             return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
         
         print(self.config['data']['target']['columns'])
-        print(self.config['data']['target']['columns'])
-        print(self.config['data']['target']['columns'])
-        print(self.config['data']['target']['columns'])
-        print(self.config['data']['target']['columns'])
         print(df.loc[:, self.config['data']['target']['columns']])
+        print(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns']))
         return df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns'])).iloc[1:, :]
 
     def prediction(self, df) -> pd.DataFrame:

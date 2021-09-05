@@ -31,14 +31,13 @@ class Data_manager():
         # else: report.set_df_origin(x[-1:], y[-1:])
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
-
         size = int(len(x) * config['model']['slice'])
         if (mode == 'tr'):
             x = x[:-size]
             y = y[:-size]
-            self.adjust_data(x, y, config['data']['target']['categorical'])
-            print(config['data'])
-            sys.exit()
+            # print(x)
+            self.adjust_data(x, y, config['data']['target']['description'])
+            # sys.exit()
         if (mode == 'te'):
             if (size > index):
                 # report.print_index(index, size)
@@ -90,7 +89,7 @@ class Data_manager():
 
     def adjust_data(self, x: np.array, y: np.array, categorical: dict, split: float=0.3) -> None:
         self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)
-        if (self.config['model']['type'] == 1): self.y_train, self.y_test = tf.keras.utils.to_categorical(y_train, categorical), tf.keras.utils.to_categorical(y_test, categorical) 
+        if (self.config['model']['type'] == 1): self.y_train, self.y_test = tf.keras.utils.to_categorical(y_train, len(categorical)), tf.keras.utils.to_categorical(y_test, len(categorical)) 
         else: self.y_train, self.y_test = y_train, y_test
 
     def get_train_test(self):
