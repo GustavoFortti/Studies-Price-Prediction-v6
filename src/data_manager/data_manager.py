@@ -27,8 +27,8 @@ class Data_manager():
             
             # print(x[-1:])
             # print(y[-1:])
-        # if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
-        # else: report.set_df_origin(x[-1:], y[-1:])
+        if (mode != 'pr'): report.set_df_origin(x[-(1 + index):-(index)], y[-(1 + index):-(index)])
+        else: report.set_df_origin(x[-1:], y[-1:])
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # divide o dataframe em bloco de 3d
         size = int(len(x) * config['model']['slice'])

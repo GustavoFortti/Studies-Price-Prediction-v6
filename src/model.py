@@ -3,22 +3,25 @@ import sys
 
 import numpy as np
 import pandas as pd
-from tensorflow.python.framework import config
 
 from src.reports.report import Report
+from src.reports.data_report import Data_report
 from src.models.LSTM.lstm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 from sklearn.preprocessing import StandardScaler
 
 class Model():
     def __init__(self, config: dict, mode: str, index: int=1) -> None:
-        self.scaler = StandardScaler() 
         self.config = config
-        self.model = LTSM_model
-        self.report = Report(config)
         self.mode = mode
 
-        data = Data_manager(self.mode, index, self.report, self.config, self.scaler)
+        self.scaler = StandardScaler() 
+        self.model = LTSM_model
+
+        self.report = Report(config)
+        self.data_report = Data_report(config)
+
+        data = Data_manager(self.mode, index, self.data_report, self.config, self.scaler)
 
         if (mode == 'tr'):
             x_train, x_test, y_train, y_test = data.get_train_test()
