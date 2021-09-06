@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 
 
 class Data_manager():
-    def __init__(self, mode: str, index: int, data_report: object, config: dict, scaler: object) -> None:
+    def __init__(self, mode: str, index: int, report: object, config: dict, scaler: object) -> None:
         self.scaler = scaler
         self.mode = mode
         self.config = config
@@ -20,7 +20,7 @@ class Data_manager():
         data_gen = Data_generated(mode, config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
         
-        data_report.set_df_origin(x, y)
+        report.set_df_origin(x, y)
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
         size = int(len(x) * config['model']['slice'])
@@ -28,7 +28,7 @@ class Data_manager():
         self.x, self.y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
         if (mode == 'tr'): self.adjust_data(self.x, self.y, config['data']['target']['description'])
         
-        data_report.set_df_end(x, y, index)
+        report.set_df_end(x, y, index)
 
     def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
         if (size < index): sys.exit()

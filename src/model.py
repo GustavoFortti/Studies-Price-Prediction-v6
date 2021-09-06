@@ -1,7 +1,11 @@
+import sys
+
+
 import numpy as np
 
 from src.reports.data_report import Data_report
 from src.reports.pred_report import Pred_report
+from src.reports.report import Report
 from src.models.LSTM.lstm import LTSM_model
 from src.data_manager.data_manager import Data_manager
 from sklearn.preprocessing import StandardScaler
@@ -13,10 +17,9 @@ class Model():
 
         self.scaler = StandardScaler() 
         self.model = LTSM_model
-        self.data_report = Data_report(config, self.scaler, mode)
-        self.pred_report = Pred_report(config, self.scaler, mode)
+        self.report = Report(config, self.scaler, mode)
 
-        data = Data_manager(self.mode, index, self.data_report, self.config, self.scaler)
+        data = Data_manager(self.mode, index, self.report, self.config, self.scaler)
 
         if (mode == 'tr'):
             x_train, x_test, y_train, y_test = data.get_train_test()
