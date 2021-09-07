@@ -74,8 +74,8 @@ class Data_manager():
         return [np.array(x_temp), np.array(y_temp)]
 
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
-        x = self.scaler.fit_transform(x)
-        if (self.config.model['type'] == 2): y = self.scaler.fit_transform(y)
+        # x = self.scaler.fit_transform(x)
+        # if (self.config.model['type'] == 2): y = self.scaler.fit_transform(y)
 
         reshaped = []
         for i in range(timesteps, x.shape[0] + 1):
@@ -87,7 +87,7 @@ class Data_manager():
         return [x, y]
 
     def adjust_data(self, x: np.array, y: np.array, categorical: dict, split: float=0.3) -> None:
-        self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)
+        self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42, shuffle=False)
         if (self.config.model['type'] == 1): self.y_train, self.y_test = tf.keras.utils.to_categorical(y_train, categorical), tf.keras.utils.to_categorical(y_test, categorical) 
         else: self.y_train, self.y_test = y_train, y_test
 
