@@ -19,11 +19,10 @@ class Data_report():
         print(self.df_origin)
         print("\n")
 
-    def set_df_end(self, x, y, index) -> None:
-        ax_array = x[-(1 + index):-(index)][0][-1:][0]
+    def set_df_end(self, x, y) -> None:
+        ax_array = x[0][-1:][0]
         scaler = self.scaler['predictor'].inverse_transform(ax_array)
-        ax_array = np.append(ax_array, y[-(1 + index):-(index)][0][0])
-
+        ax_array = np.append(ax_array, y[0][0])
 
         # for i, j in zip(self.df, ax_array):
         #     if (round(self.df[i].values[0], 3) != round(j, 3)): 

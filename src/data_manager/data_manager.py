@@ -27,13 +27,13 @@ class Data_manager():
         self.x, self.y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
 
         if (mode == 'tr'): self.adjust_data(self.x, self.y, config['data']['target']['description'])
-        if (mode in ['pr', 'te']): report.set_df_end(x, y, index)
+        if (mode in ['pr', 'te']): report.set_df_end(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
 
     def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
         if (size < index): 
             print("Error: index > size")
             sys.exit()
-        return df[:-size] if 'tr' == mode else (df[-(1 + index):-(index)] if 'te' == mode else df[-1:]) #  df[-1:] - 'pr' == mode
+        return df[:-size] if 'tr' == mode else (df[-(1 + index):-(index)] if 'te' == mode else df[-1:])
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
         x_temp, y_temp = [], []
@@ -41,7 +41,7 @@ class Data_manager():
         
         for i in range(0, len(x), reduce):
             x_aux, y_aux = self.shape_data(x.iloc[i + init:(i + reduce), :], y[i + init:(i + reduce)], timesteps)
-            if (self.mode != 'pr'):
+            if (self.mode == 'tr'):
                 x_aux, y_aux = x_aux[:-1], y_aux[:-1]
             if (x_temp == []):
                 x_temp, y_temp = x_aux, y_aux

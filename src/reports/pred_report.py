@@ -22,9 +22,9 @@ class Pred_report():
             out = self.scaler['target'].inverse_transform(pred)
 
         print(out)
-        if(self.config['model']['type'] == 2): self.print_regression(pred, df_origin, out)
+        if((self.config['model']['type'] == 2) & (self.mode == 'te')): self.print_regression_test(pred, df_origin, out)
 
-    def print_regression(self, pred, df_origin, out):
+    def print_regression_test(self, pred, df_origin, out):
         
         origin = self.df_origin[self.config['data']['target']['columns'][0]].values[0]
         target = self.df_origin['target'].values[0]
@@ -45,11 +45,11 @@ class Pred_report():
             "erro": str(erro)
         }
 
-        file = self.config['data']['path'] + df_origin.index[0] + ".csv"
-
-        if (os.path.isfile(file)): df = pd.read_csv(file, names=data.keys, index=[0])
+        file = self.config['data']['path'] + "test.csv"
+        flag = os.path.isfile(file)
+        if (flag): df = pd.read_csv(file)
         else: df = pd.DataFrame(data, index=[0])
-        if(len(df) > 1): df = df.append(data)
+        if(flag): df = df.append(data, ignore_index=True)
 
         print(df)
 
