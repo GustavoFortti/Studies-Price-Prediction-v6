@@ -19,7 +19,7 @@ class Data_manager():
 
         data_gen = Data_generated(mode, config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
-        
+
         report.set_df_origin(x, y)
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
@@ -27,8 +27,7 @@ class Data_manager():
         
         self.x, self.y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
         if (mode == 'tr'): self.adjust_data(self.x, self.y, config['data']['target']['description'])
-        
-        report.set_df_end(x, y, index)
+        if (mode == 'pr'): report.set_df_end(x, y, index)
 
     def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
         if (size < index): sys.exit()
@@ -50,8 +49,8 @@ class Data_manager():
         return [np.array(x_temp), np.array(y_temp)]
 
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
-        x = self.scaler.fit_transform(x)
-        if (self.config['model']['type'] == 2): y = self.scaler.fit_transform(y)
+        x = self.scaler['predictor'].fit_transform(x)
+        if (self.config['model']['type'] == 2): y = self.scaler['target'].fit_transform(y)
 
         reshaped = []
         for i in range(timesteps, x.shape[0] + 1):

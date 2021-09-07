@@ -1,10 +1,7 @@
 import sys
 
-
 import numpy as np
 
-from src.reports.data_report import Data_report
-from src.reports.pred_report import Pred_report
 from src.reports.report import Report
 from src.models.LSTM.lstm import LTSM_model
 from src.data_manager.data_manager import Data_manager
@@ -15,7 +12,7 @@ class Model():
         self.config = config
         self.mode = mode
 
-        self.scaler = StandardScaler() 
+        self.scaler = {"predictor": StandardScaler(), "target": StandardScaler()}
         self.model = LTSM_model
         self.report = Report(config, self.scaler, mode)
 
@@ -36,4 +33,4 @@ class Model():
     def pred(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
-        self.pred_report.print_resp(pred)
+        self.report.print_resp(pred)

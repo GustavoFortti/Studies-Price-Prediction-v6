@@ -7,10 +7,8 @@ import numpy as np
 pd.options.mode.chained_assignment = None 
 
 class Data_report():
-    def __init__(self, config: dict, scalar: object, mode: str) -> None:
-        super().__init__()
-
-        self.scalar = scalar
+    def __init__(self, config: dict, scaler: object, mode: str) -> None:
+        self.scaler = scaler
         self.config = config
         self.mode = mode
 
@@ -19,10 +17,13 @@ class Data_report():
         x['target'] = y['target'].values
         self.df = x
         if (self.mode == 'pr'): print(self.df)
+        # print(self.df)
 
     def set_df_end(self, x, y, index) -> None:
         ax_array = x[-(1 + index):-(index)][0][-1:][0]
+        scaler = self.scaler['predictor'].inverse_transform(ax_array)
         ax_array = np.append(ax_array, y[-(1 + index):-(index)][0][0])
+
 
         # for i, j in zip(self.df, ax_array):
         #     if (round(self.df[i].values[0], 3) != round(j, 3)): 

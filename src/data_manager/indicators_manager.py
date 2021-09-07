@@ -1,4 +1,5 @@
 from copy import deepcopy
+from os import name
 import numpy as np
 import pandas as pd
 import ta
@@ -28,7 +29,9 @@ class Inticators_manager():
             if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
             return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
         
-        return df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns'])).iloc[1:, :]
+        df = df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns'])).iloc[1:, :]
+        df.columns = ['target']
+        return df
 
     def prediction(self, df) -> pd.DataFrame:
         indicators = [

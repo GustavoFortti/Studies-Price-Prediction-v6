@@ -11,9 +11,9 @@ from src.reports.price_report import Price_report
 pd.options.mode.chained_assignment = None 
 
 class Report(Data_report, Pred_report, Price_report):
-    def __init__(self, config: dict, scalar: object, mode: str) -> None:
-        super().__init__(scalar, config, mode)
+    def __init__(self, config: dict, scaler: object, mode: str) -> None:
+        super().__init__(config, scaler, mode)
 
-        self.scalar = scalar
+        self.scaler = scaler
         self.config = config
         self.mode = mode
