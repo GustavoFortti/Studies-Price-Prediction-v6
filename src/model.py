@@ -33,4 +33,4 @@ class Model():
     def pred(self, x: np.array) -> None:
         catalyst = self.model(self.config)
         pred = catalyst.predict(x)
-        self.report.print_resp(pred)
+        self.report.report_pred(pred)

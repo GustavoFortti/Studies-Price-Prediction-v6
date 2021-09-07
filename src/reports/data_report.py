@@ -15,9 +15,9 @@ class Data_report():
     def set_df_origin(self, x, y) -> None:
         x = x.iloc[:, :4]
         x['target'] = y['target'].values
-        self.df = x
-        if (self.mode == 'pr'): print(self.df)
-        # print(self.df)
+        self.df_origin = x
+        print(self.df_origin)
+        print("\n")
 
     def set_df_end(self, x, y, index) -> None:
         ax_array = x[-(1 + index):-(index)][0][-1:][0]
@@ -29,5 +29,3 @@ class Data_report():
         #     if (round(self.df[i].values[0], 3) != round(j, 3)): 
         #         print("Error target: unaligned data")
         #         sys.exit()
-
-

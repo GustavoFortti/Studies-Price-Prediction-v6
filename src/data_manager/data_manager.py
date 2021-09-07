@@ -19,18 +19,20 @@ class Data_manager():
 
         data_gen = Data_generated(mode, config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
+        size = int(len(x) * config['model']['slice'])
 
-        report.set_df_origin(x, y)
+        if (mode in ['pr', 'te']): report.set_df_origin(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
-        size = int(len(x) * config['model']['slice'])
-        
         self.x, self.y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
+
         if (mode == 'tr'): self.adjust_data(self.x, self.y, config['data']['target']['description'])
-        if (mode == 'pr'): report.set_df_end(x, y, index)
+        if (mode in ['pr', 'te']): report.set_df_end(x, y, index)
 
     def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
-        if (size < index): sys.exit()
+        if (size < index): 
+            print("Error: index > size")
+            sys.exit()
         return df[:-size] if 'tr' == mode else (df[-(1 + index):-(index)] if 'te' == mode else df[-1:]) #  df[-1:] - 'pr' == mode
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:

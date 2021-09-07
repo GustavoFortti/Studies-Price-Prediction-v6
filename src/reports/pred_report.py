@@ -1,6 +1,5 @@
 import os
 import sys
-from datetime import date
 
 import pandas as pd
 import numpy as np
@@ -13,21 +12,45 @@ class Pred_report():
         self.config = config
         self.mode = mode
 
-    def print_resp(self, pred) -> None:
+    def print_resp(self, pred, df_origin) -> None:
         if (self.config['model']['type'] == 1):
             ax_df = pd.DataFrame(pred, columns=self.config['data']["target"]["description"])
             ax_df = ax_df.T
             ax_df.columns = ["target"]
             out = ax_df.sort_values(by="target", ascending=False)
-            print(out)
         else: 
             out = self.scaler['target'].inverse_transform(pred)
-            print(out)
+
+        print(out)
+        if(self.config['model']['type'] == 2): self.print_regression(pred, df_origin, out)
+
+    def print_regression(self, pred, df_origin, out):
         
-        data = {"name": self.config['name'], "pred": str(out[0]), "target": self.config['data']['target']['columns'][0]}
-        f = self.config['data']['path'] + date.today().strftime("%Y%m%d") + ".csv"
-        if (os.path.isfile(f)): df = pd.read_csv(f, names=['name', 'pred', 'target'])
+        origin = self.df_origin[self.config['data']['target']['columns'][0]].values[0]
+        target = self.df_origin['target'].values[0]
+        pred = np.ndarray.tolist(out[0])
+        direction_pred = [1 if i > origin else 0 for i in pred]
+        direction_target = 1 if target > origin else 0
+        erro = np.ndarray.tolist(abs(pred - target))
+
+        data = {
+            "date": df_origin.index[0],
+            "name": self.config['name'], 
+            "target_name": self.config['data']['target']['columns'][0],
+            "origin": origin,
+            "pred": str(pred), 
+            "target": target,
+            "direction_target": direction_target,
+            "direction_pred": str(direction_pred),
+            "erro": str(erro)
+        }
+
+        file = self.config['data']['path'] + df_origin.index[0] + ".csv"
+
+        if (os.path.isfile(file)): df = pd.read_csv(file, names=data.keys, index=[0])
         else: df = pd.DataFrame(data, index=[0])
         if(len(df) > 1): df = df.append(data)
 
-        df.to_csv(f, index=False)
+        print(df)
+
+        df.to_csv(file, index=False)
