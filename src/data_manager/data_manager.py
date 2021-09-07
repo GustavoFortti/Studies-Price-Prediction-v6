@@ -24,10 +24,10 @@ class Data_manager():
         if (mode in ['pr', 'te']): report.set_df_origin(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
-        self.x, self.y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
+        x, y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
 
-        if (mode == 'tr'): self.adjust_data(self.x, self.y, config['data']['target']['description'])
-        if (mode in ['pr', 'te']): report.set_df_end(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
+        if (mode == 'tr'): self.adjust_data(x, y, config['data']['target']['description'])
+        if (mode in ['pr', 'te']): report.set_df_end(x, y)
 
     def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
         if (size < index): 
@@ -37,7 +37,7 @@ class Data_manager():
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
         x_temp, y_temp = [], []
-        init = 50
+        init = 100
         
         for i in range(0, len(x), reduce):
             x_aux, y_aux = self.shape_data(x.iloc[i + init:(i + reduce), :], y[i + init:(i + reduce)], timesteps)
@@ -61,7 +61,7 @@ class Data_manager():
         return [np.array(reshaped), np.array(y[timesteps-1:])]
 
     def adjust_data(self, x: np.array, y: np.array, categorical: dict, split: float=0.3) -> None:
-        self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)
+        self.x_train, self.x_test, y_train, y_test = train_test_split(x, y, test_size=split, random_state=42)#, shuffle=False)
         if (self.config['model']['type'] == 1): self.y_train, self.y_test = tf.keras.utils.to_categorical(y_train, len(categorical)), tf.keras.utils.to_categorical(y_test, len(categorical)) 
         else: self.y_train, self.y_test = y_train, y_test
 
