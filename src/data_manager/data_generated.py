@@ -3,8 +3,8 @@ import sys
 from copy import deepcopy
 
 import pandas as pd
-from src.data_manager.indicators_manager import Inticators_manager
 
+from src.data_manager.indicators_manager import Inticators_manager
 from src.services.api import Api_market
 
 class Data_generated():

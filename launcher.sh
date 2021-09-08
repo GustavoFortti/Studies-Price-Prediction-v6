@@ -1,15 +1,13 @@
-rm ./notebooks/out.txt
+rm ./data/treined/$1/data_predict/test.csv
 
-for i in "1" "3" "4" "5"; do
-    python3 main.py -m pr -t 2 -c $1 -q $i
+for i in `seq 1 22`; do
+    python3 main.py -m te -t 2 -c $1 -q 1 -i $i
     sleep 5
 done
 
-for i in `seq 1 5`; do
-    python3 main.py -m pr -t 1 -c $1 -q $i
-    sleep 5
-done
+# cp ./data/treined/$1/data_predict/test.csv ./notebooks
 
-# for i in `seq 1 99`; do
-#     python3 main.py -m te -i $i
+# for i in `seq 1 4`; do
+#     python3 main.py -m tr -t 2 -c $1 -q $i -i 1
+#     sleep 5
 # done

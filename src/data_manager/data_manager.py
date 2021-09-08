@@ -1,15 +1,13 @@
-from copy import deepcopy
 import sys
+from copy import deepcopy
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from pandas.core.frame import DataFrame
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
 
 from src.data_manager.data_generated import Data_generated
-
-import tensorflow as tf
-from pandas.core.frame import DataFrame
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import Binarizer
 
 
 class Data_manager():
