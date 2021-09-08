@@ -10,19 +10,18 @@ from src.services.api import Api_market
 class Data_generated():
     def __init__(self, mode: str, config: dict) -> None:
         self.config = config
-        self.path = config.path
+        self.path = config['path']
         self.mode = mode
 
         api = Api_market(mode, config)
         df = api.data
-        # df = api.no_api()
     
         self.size = len(df)
-        self.reduce = int(self.size / config.data['reduce'])
+        self.reduce = int(self.size / config['data']['reduce'])
 
         if ((self.mode in ['tr', 'td', 'te'])) & (os.path.isfile(self.path + 'data.csv')): self.predictor = self.read_data()
-        elif ((self.mode != 'te')): self.predictor = self.generate_data(deepcopy(df), True)
-        self.target = self.generate_data(deepcopy(self.predictor.loc[:, config.data['predict']['columns']]), False)
+        elif (self.mode != 'te'): self.predictor = self.generate_data(deepcopy(df), True)
+        self.target = self.generate_data(deepcopy(self.predictor.loc[:, config['data']['predict']['columns']]), False)
         if (self.mode == 'gd'): sys.exit()
         
     def read_data(self) -> pd.DataFrame:
