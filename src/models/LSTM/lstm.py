@@ -32,10 +32,6 @@ class LTSM_model():
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=28, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
     def regression(self, x_train, x_test, y_train, y_test) -> None:
-
-        # print(x_test)
-        # print(y_test)
-        # sys.exit()
         self.model = Sequential()
 
         self.model.add(LSTM(242, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))

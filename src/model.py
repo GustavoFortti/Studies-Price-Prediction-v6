@@ -25,12 +25,6 @@ class Model():
 
     def train(self, x_train: np.array, x_test: np.array, y_train: np.array, y_test: np.array) -> None:
         catalyst = self.model(self.config)
-
-        # print(x_train)
-        # print(x_train.shape)
-
-        # sys.exit()
-
         create_model = catalyst.classification if (self.config['model']['type'] == 1) else catalyst.regression
         create_model(x_train, x_test, y_train, y_test)
         catalyst.save()

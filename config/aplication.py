@@ -14,7 +14,7 @@ class Config():
         target = TARGET['columns'][question - 1]
         description = TARGET["description"][0 if len(target) == 1 else 1]
         epochs = 80 if (_type == 2) else 5
-        timesteps = 20 if (_type == 2) else 8
+        timesteps = 27 if (_type == 2) else 8
 
         self.config = {
             "name": name,
