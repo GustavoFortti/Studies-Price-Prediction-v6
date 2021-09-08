@@ -13,12 +13,12 @@ class Config():
 
         target = TARGET['columns'][question - 1]
         description = TARGET["description"][0 if len(target) == 1 else 1]
-        epochs = 80 if (target == 2) else 5
-        timesteps = 20 if (target == 2) else 8
+        epochs = 80 if (_type == 2) else 5
+        timesteps = 27 if (_type == 2) else 8
 
         self.config = {
             "name": name,
-            "path": "./data/treined/" + currency + '/',
+            "path": "./data/treined/" + currency + "/",
             "market": {
                 "currency": currency, 
                 "request": False 
@@ -26,7 +26,7 @@ class Config():
             "model": {
                 "name": "LSTM",
                 "type": _type,
-                "slice": 0.02,
+                "slice": 0.01,
                 "LSTM": {
                     "epochs": epochs
                 }
@@ -41,7 +41,7 @@ class Config():
                     "columns": target, "description": description
                 },
                 "reduce": 1,
-                "path": "/models/data_predict/",
+                "path":  "./data/treined/" + currency + "/data_predict/",
                 "indicators": True
             }
         }
@@ -53,8 +53,8 @@ class Config():
         if (not os.path.exists(path)):
             os.makedirs(path)
             os.makedirs(path + "/models")
-            os.makedirs(path + "/models/data_predict/")
             os.makedirs(path + "/config")
+            os.makedirs(self.config['data']['path'])
 
             f = open(path + '/config/aplication.py', 'w')
             f.write("CONF = " + str(self.config))
