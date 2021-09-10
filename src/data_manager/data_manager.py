@@ -9,7 +9,6 @@ from sklearn.model_selection import train_test_split
 
 from src.data_manager.data_generated import Data_generated
 
-
 class Data_manager():
     def __init__(self, mode: str, index: int, report: object, config: dict, scaler: object) -> None:
         self.scaler = scaler

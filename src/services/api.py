@@ -15,13 +15,14 @@ class Api_market():
         if ((request) | (not os.path.isfile(file)) | (mode == 'pr')):
             data = yf.Ticker(currency)
             self.data = data.history(period="max")
+            self.data = self.data.loc[:, config['data']['predict']['columns']]
+            self.data = self.data.dropna()
+            for i in self.data.columns: 
+                self.data = self.data[self.data[i] != 0]
             self.data.to_csv(file)
         else:
             self.data = pd.read_csv(file, index_col='Date')
 
-        self.data = self.data.loc[:, config['data']['predict']['columns']]
-        self.data = self.data.dropna()
-        for i in self.data.columns: self.data = self.data[self.data[i] != 0]
 
     def no_api(self):
         self.data = pd.read_csv('./data/EURUSD60.csv', names=["Date", "Open", "High", "Low", "Close", "Volume"], sep='\t')
