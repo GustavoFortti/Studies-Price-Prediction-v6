@@ -26,7 +26,7 @@ class Config():
             "model": {
                 "name": "LSTM",
                 "type": _type,
-                "slice": 0.01,
+                "slice": 0.02,
                 "LSTM": {
                     "epochs": epochs
                 }

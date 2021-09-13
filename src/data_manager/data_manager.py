@@ -22,6 +22,7 @@ class Data_manager():
         if (mode in ['pr', 'te']): report.set_df_origin(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
+        self.x_pred_vector, self.y_pred_vector = x[-size:, :], y[-size:, :]
         x, y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
 
         if (mode == 'tr'): self.adjust_data(x, y, config['data']['target']['description'])
@@ -73,3 +74,9 @@ class Data_manager():
 
     def get_y(self) -> np.array:
         return self.y
+
+    def get_x_pred_vector(self) -> np.array:
+        return self.x_pred_vector
+
+    def get_y_pred_vector(self) -> np.array:
+        return self.y_pred_vector

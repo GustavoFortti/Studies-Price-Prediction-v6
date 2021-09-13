@@ -5,6 +5,8 @@ import tensorflow as tf
 from keras.models import Sequential, Model
 from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, BatchNormalization, GRU
 from keras import backend as K
+import matplotlib.pyplot as plt
+import random
 
 class LTSM_model():
     def __init__(self, config: dict) -> None:
@@ -13,7 +15,7 @@ class LTSM_model():
         self.path = config['path'] + config['name'] + '/models/epochs_' + str(self.epochs) + '_' + self.name +  '_lstm_model'
         self.categorical = len(config['data']['target']['description'])
 
-    def classification(self, x_train, x_test, y_train, y_test) -> None:
+    def classification(self, x_train, x_test, y_train, y_test, x, y) -> None:
         self.model = Sequential()
 
         self.model.add(LSTM(32, input_shape=(x_train.shape[1], x_train.shape[2]), return_sequences=True))
@@ -31,22 +33,30 @@ class LTSM_model():
 
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=28, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
-    def regression(self, x_train, x_test, y_train, y_test) -> None:
+    def regression(self, x_train, x_test, y_train, y_test, x, y) -> None:
         self.model = Sequential()
 
         self.model.add(LSTM(242, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
         self.model.add(Dropout(0.25))
-        self.model.add(LSTM(121, return_sequences=False))
+        self.model.add(LSTM(122, return_sequences=False))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Dense(32, activation='softmax'))
-        self.model.add(Dense(20, activation='relu'))
+        self.model.add(Dense(25, activation='relu'))
         self.model.add(Dense(16, activation='relu'))
-        self.model.add(Dense(11))
+        self.model.add(Dense(8, activation='relu'))
+        self.model.add(Dense(1))
 
-  
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        # self.model.summary()
+        self.model.fit(x_train, y_train, epochs=10, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+
+
+        r = range(0, y.shape[0])
+        pred = self.model.predict(x)
+        plt.scatter(r, y)
+        plt.plot(r, )
+        plt.show()
+
 
     def save(self) -> None:
         self.model.save(self.path)
