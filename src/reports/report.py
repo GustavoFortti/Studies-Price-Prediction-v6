@@ -13,7 +13,7 @@ pd.options.mode.chained_assignment = None
 class Report(Data_report, Pred_report, Price_report):
     def __init__(self, config: dict, scaler: object, mode: str) -> None:
         super().__init__(config, scaler, mode)
-
+        
         self.scaler = scaler
         self.config = config
         self.mode = mode

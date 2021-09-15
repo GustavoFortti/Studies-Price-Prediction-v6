@@ -19,6 +19,12 @@ class Data_report():
         print(self.df_origin)
         print("\n")
 
+    def set_df_test(self, x) -> None:
+        self.df_test = x.iloc[:, :4]
+
+    def set_df_test_scaler(self, x) -> None:
+        self.df_test_scaler = x
+
     def set_df_end(self, x, y) -> None:
         ax_array = x[0][-1:][0]
         scaler = self.scaler['predictor'].inverse_transform(ax_array)

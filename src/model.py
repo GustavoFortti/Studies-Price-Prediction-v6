@@ -24,8 +24,7 @@ class Model():
     def train(self, data: object) -> None:
         catalyst = self.model(self.config)
         create_model = catalyst.classification if (self.config['model']['type'] == 1) else catalyst.regression
-        x_train, x_test, y_train, y_test = data.get_train_test()
-        create_model(x_train, x_test, y_train, y_test, data.get_x_pred_vector(), data.get_y_pred_vector())
+        create_model(data, self.report)
         # catalyst.save()
 
 

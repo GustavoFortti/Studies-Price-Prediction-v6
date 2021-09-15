@@ -14,15 +14,21 @@ class Data_manager():
         self.scaler = scaler
         self.mode = mode
         self.config = config
+        self.report = report
 
         data_gen = Data_generated(mode, config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
+
         size = int(len(x) * config['model']['slice'])
 
+        self.size = size
+
         if (mode in ['pr', 'te']): report.set_df_origin(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
+        if (self.mode in ['tr']): self.report.set_df_test(x[-self.size:])
 
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
-        self.x_pred_vector, self.y_pred_vector = x[-size:, :], y[-size:, :]
+        self.x_pred_vector, self.y_pred_vector = x[-size:, :], y[-size:, :] # excluir linha
+        
         x, y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
 
         if (mode == 'tr'): self.adjust_data(x, y, config['data']['target']['description'])
@@ -54,7 +60,9 @@ class Data_manager():
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
         x = self.scaler['predictor'].fit_transform(x)
         if (self.config['model']['type'] == 2): y = self.scaler['target'].fit_transform(y)
-
+        self.report.set_df_test_scaler(x[-self.size:])
+        self.y_test_scaler = y[-self.size:]
+        
         reshaped = []
         for i in range(timesteps, x.shape[0] + 1):
             reshaped.append(x[i - timesteps:i])
