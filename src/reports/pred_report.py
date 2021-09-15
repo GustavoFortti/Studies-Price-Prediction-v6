@@ -3,6 +3,7 @@ import sys
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 pd.options.mode.chained_assignment = None 
 
@@ -54,3 +55,22 @@ class Pred_report():
         print(df)
 
         df.to_csv(file, index=False)
+    
+    def print_regression_train(self, model, df_x_test_end, df_y_test_end, index):
+        print(df_x_test_end)
+        # x, y = df_x_test_end[1:-1, :1], df_y_test_end[1:-1, :1]
+    
+        # df = pd.DataFrame(df_x_test_end, columns=['x'])
+        # df['y'] = y
+        # df['bool'] = [1 if i > j else 0 for i, j in zip(df.y, df.x)]
+        # pd.set_option("display.max_rows", None, "display.max_columns", None)
+        # pred = model.predict(x)
+        # df['pred'] = pred
+        # df['p_bool'] = [1 if i > j else 0 for i, j in zip(df.y, df.pred)]
+        # print(df)
+
+        # plt.plot(index, y, label = "y")
+        # plt.plot(index, pred, label = "pred")
+        # plt.grid(True)
+        
+        # plt.show()

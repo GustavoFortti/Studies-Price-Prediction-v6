@@ -6,7 +6,7 @@ import tensorflow as tf
 from keras.models import Sequential, Model
 from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, BatchNormalization, GRU
 from keras import backend as K
-import matplotlib.pyplot as plt
+
 import random
 from sklearn.preprocessing import Binarizer
 class LTSM_model():
@@ -36,11 +36,6 @@ class LTSM_model():
 
     def regression(self, data: object, report: object) -> None:
         x_train, x_test, y_train, y_test = data.get_train_test()
-        x, y = data.get_x_pred_vector()[1:, :], data.get_y_pred_vector()[1:, :]
-        
-        df = pd.DataFrame(report.df_test_scaler[:-1, :1], columns=['x'])
-        df['y'] = y
-        df['bool'] = [1 if i > j else 0 for i, j in zip(df.y, df.x)]
 
         self.model = Sequential()
 
@@ -55,21 +50,10 @@ class LTSM_model():
         self.model.add(Dense(1))
 
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=20, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=1, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
         # self.model.summary()
 
-        pd.set_option("display.max_rows", None, "display.max_columns", None)
-        r = report.df_test.index[1:]
-        pred = self.model.predict(x)
-        df['pred'] = pred
-        df['p_bool'] = [1 if i > j else 0 for i, j in zip(df.y, df.pred)]
-        print(df)
-        plt.plot(r, y, label = "y")
-        plt.plot(r, pred, label = "pred")
-        plt.grid(True)
-        
-        plt.show()
-
+        report.print_regression_train(self.model, report.df_x_test_end, report.df_y_test_end, report.df_test_origin.index[1:])
 
     def save(self) -> None:
         self.model.save(self.path)

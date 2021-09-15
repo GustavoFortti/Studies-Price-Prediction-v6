@@ -15,32 +15,32 @@ class Data_manager():
         self.mode = mode
         self.config = config
         self.report = report
+        self.index = index
 
         data_gen = Data_generated(mode, config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
+        self.size = int(len(x) * config['model']['slice'])
 
-        size = int(len(x) * config['model']['slice'])
+        # report.set_df_origin(self.df_slice(x), self.df_slice(y))
 
-        self.size = size
-
-        if (mode in ['pr', 'te']): report.set_df_origin(self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size))
-        if (self.mode in ['tr']): self.report.set_df_test(x[-self.size:])
-
+        if (mode in ['pr', 'te']): report.set_df_origin(self.df_slice(x), self.df_slice(y))
+        else: report.set_df_test_origin(x[-self.size:])
         x, y = self.pre_shape_data(x, y, config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
-        self.x_pred_vector, self.y_pred_vector = x[-size:, :], y[-size:, :] # excluir linha
         
-        x, y = self.df_slice(mode, index, x, size), self.df_slice(mode, index, y, size)
+        # report.set_df_shape(self.df_slice(x), self.df_slice(y))
 
-        if (mode == 'tr'): self.adjust_data(x, y, config['data']['target']['description'])
-        if (mode in ['pr', 'te']): report.set_df_end(x, y)
-
+        x, y = self.df_slice(x), self.df_slice(y)
         self.x, self.y = x, y
 
-    def df_slice(self, mode: str, index: int, df: pd.DataFrame = None, size: int = 0) -> pd.DataFrame:
-        if (size < index): 
+        # report.set_df_end(self.df_slice(x), self.df_slice(y))
+        if (mode in ['pr', 'te']): report.set_df_end(x, y)
+        else: self.adjust_data(x, y, config['data']['target']['description'])
+
+    def df_slice(self, df: pd.DataFrame = None) -> pd.DataFrame:
+        if (self.size < self.index): 
             print("Error: index > size")
             sys.exit()
-        return df[:-size] if 'tr' == mode else (df[-(1 + index):-(index)] if 'te' == mode else df[-1:])
+        return df[:-self.size] if 'tr' == self.mode else (df[-(1 + self.index):-(self.index)] if 'te' == self.mode else df[-1:])
 
     def pre_shape_data(self, x: DataFrame, y: np.array, timesteps: int, reduce: int) -> list:
         x_temp, y_temp = [], []
@@ -60,9 +60,10 @@ class Data_manager():
     def shape_data(self, x: DataFrame, y: np.array, timesteps: int) -> list:
         x = self.scaler['predictor'].fit_transform(x)
         if (self.config['model']['type'] == 2): y = self.scaler['target'].fit_transform(y)
-        self.report.set_df_test_scaler(x[-self.size:])
-        self.y_test_scaler = y[-self.size:]
-        
+
+        self.report.set_df_test_end(x[-self.size:], y[-self.size:])
+        # report.set_df_origin_scaller(self.df_slice(x), self.df_slice(y))
+
         reshaped = []
         for i in range(timesteps, x.shape[0] + 1):
             reshaped.append(x[i - timesteps:i])
@@ -82,9 +83,3 @@ class Data_manager():
 
     def get_y(self) -> np.array:
         return self.y
-
-    def get_x_pred_vector(self) -> np.array:
-        return self.x_pred_vector
-
-    def get_y_pred_vector(self) -> np.array:
-        return self.y_pred_vector

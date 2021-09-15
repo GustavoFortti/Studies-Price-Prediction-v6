@@ -14,7 +14,7 @@ class Model():
 
         self.scaler = {"predictor": StandardScaler(), "target": StandardScaler()}
         self.model = LTSM_model
-        self.report = Report(config, self.scaler, mode)
+        self.report = Report(self.config, self.scaler, self.mode)
 
         data = Data_manager(self.mode, index, self.report, self.config, self.scaler)
         
