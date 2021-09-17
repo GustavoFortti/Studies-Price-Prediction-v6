@@ -35,6 +35,8 @@ class LTSM_model():
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=28, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
     def regression(self, data: object, report: object) -> None:
+        self.data = data
+        self.report = report
         x_train, x_test, y_train, y_test = data.get_train_test()
 
         self.model = Sequential()
@@ -53,11 +55,14 @@ class LTSM_model():
         self.model.fit(x_train, y_train, epochs=1, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
         # self.model.summary()
 
-        report.print_regression_train(self.model, report.df_x_test_end, report.df_y_test_end, report.df_test_origin.index[1:])
-
-    def save(self) -> None:
         self.model.save(self.path)
-    
+
+        self.print_graph()
+
     def predict(self, x) -> np.array:
+        self.print_graph()
         model = tf.keras.models.load_model(self.path)
         return model.predict(x)
+
+    def print_graph(self):
+        self.report.print_regression_train(self.model, self.report.df_x_test, self.report.df_y_test, self.report.df_x_origin_scaller, self.report.df_y_origin_scaller, self.report.df_origin)

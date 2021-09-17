@@ -25,8 +25,6 @@ class Model():
         catalyst = self.model(self.config)
         create_model = catalyst.classification if (self.config['model']['type'] == 1) else catalyst.regression
         create_model(data, self.report)
-        # catalyst.save()
-
 
     def pred(self, x: np.array) -> None:
         catalyst = self.model(self.config)

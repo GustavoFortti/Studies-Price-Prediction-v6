@@ -56,21 +56,30 @@ class Pred_report():
 
         df.to_csv(file, index=False)
     
-    def print_regression_train(self, model, df_x_test_end, df_y_test_end, index):
-        print(df_x_test_end)
-        # x, y = df_x_test_end[1:-1, :1], df_y_test_end[1:-1, :1]
-    
-        # df = pd.DataFrame(df_x_test_end, columns=['x'])
-        # df['y'] = y
-        # df['bool'] = [1 if i > j else 0 for i, j in zip(df.y, df.x)]
-        # pd.set_option("display.max_rows", None, "display.max_columns", None)
-        # pred = model.predict(x)
-        # df['pred'] = pred
-        # df['p_bool'] = [1 if i > j else 0 for i, j in zip(df.y, df.pred)]
-        # print(df)
+    def print_regression_train(self, model, df_x_test, df_y_test, df_x_origin_scaller, df_y_origin_scaller, df_origin):
+        index = df_origin.index[:-1]
+        print(df_origin)
+        x, y = df_x_test[:-1, :], df_y_test[:-1, :]
+        df_x_origin_scaller, df_y_origin_scaller = df_x_origin_scaller[:-1, :1], df_y_origin_scaller[:-1, :1]
 
-        # plt.plot(index, y, label = "y")
-        # plt.plot(index, pred, label = "pred")
-        # plt.grid(True)
+        df = pd.DataFrame(df_x_origin_scaller, columns=['x'])
+        df['y'] = df_y_origin_scaller
+        df['bool'] = [0 if j > i else 1 for i, j in zip(df.y, df.x)]
+        pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+        pred = model.predict(x)
+        df['pred'] = pred
+        df['p_bool'] = [0 if j > i else 1 for i, j in zip(df.pred, df.x)]
+        df['right'] = df['bool'] == df['p_bool']
         
-        # plt.show()
+        print(df)
+        print('\n')
+        print(df['right'].value_counts(normalize=True))
+        print(df['right'].value_counts())
+
+        plt.plot(index, y, label = "y")
+        plt.plot(index, pred, label = "pred")
+        plt.grid(True)
+        plt.xticks(rotation=45) 
+        
+        plt.show()
