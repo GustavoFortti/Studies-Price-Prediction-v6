@@ -41,18 +41,21 @@ class LTSM_model():
 
         self.model = Sequential()
 
-        self.model.add(LSTM(242, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
+        self.model.add(LSTM(170, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
         self.model.add(Dropout(0.25))
-        self.model.add(LSTM(122, return_sequences=False))
+        self.model.add(LSTM(170, return_sequences=True))
+        self.model.add(Dropout(0.25))
+        self.model.add(LSTM(170, return_sequences=True))
+        self.model.add(Dropout(0.25))
+        self.model.add(LSTM(170, return_sequences=False))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Dense(32, activation='softmax'))
+        self.model.add(Dense(30, activation='relu'))
         self.model.add(Dense(16, activation='relu'))
-        self.model.add(Dense(8, activation='relu'))
         self.model.add(Dense(1))
 
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=1, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=3, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
         # self.model.summary()
 
         self.model.save(self.path)

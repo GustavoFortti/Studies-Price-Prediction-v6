@@ -77,9 +77,15 @@ class Pred_report():
         print(df['right'].value_counts(normalize=True))
         print(df['right'].value_counts())
 
+        print('\n')
+        print(df.describe())
+
         plt.plot(index, y, label = "y")
         plt.plot(index, pred, label = "pred")
         plt.grid(True)
         plt.xticks(rotation=45) 
         
         plt.show()
+
+        df = df.set_index(index)
+        df.to_csv('./notebooks/pred.csv')

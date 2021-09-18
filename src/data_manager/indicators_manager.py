@@ -17,8 +17,8 @@ class Inticators_manager():
     def generate(self, df) -> pd.DataFrame:
         df = deepcopy(df)
         if (self.is_predict):
-            return self.prediction(df)
-            # return df
+            # return self.prediction(df)
+            return df
         else:
             return self.target(df)
             
