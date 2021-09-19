@@ -58,18 +58,20 @@ class Pred_report():
     
     def print_regression_train(self, model, df_x_test, df_y_test, df_x_origin_scaller, df_y_origin_scaller, df_origin):
         index = df_origin.index[:-1]
-        print(df_origin)
         x, y = df_x_test[:-1, :], df_y_test[:-1, :]
-        df_x_origin_scaller, df_y_origin_scaller = df_x_origin_scaller[:-1, :1], df_y_origin_scaller[:-1, :1]
+        df_x_origin_scaller, df_y_origin_scaller = df_x_origin_scaller[:-1, :5], df_y_origin_scaller[:-1, :5]
+        target = self.config['data']["target"]["columns"][0]
 
-        df = pd.DataFrame(df_x_origin_scaller, columns=['x'])
+        df = pd.DataFrame(df_x_origin_scaller, columns=self.config['data']["predict"]["columns"])
+        df = df.set_index(index)
         df['y'] = df_y_origin_scaller
-        df['bool'] = [0 if j > i else 1 for i, j in zip(df.y, df.x)]
-        pd.set_option("display.max_rows", None, "display.max_columns", None)
+        df['bool'] = [0 if j >= i else 1 for i, j in zip(df.y, df[target])]
+        # pd.set_option("display.max_rows", None, "display.max_columns", None)
+
 
         pred = model.predict(x)
         df['pred'] = pred
-        df['p_bool'] = [0 if j > i else 1 for i, j in zip(df.pred, df.x)]
+        df['p_bool'] = [0 if j > i else 1 for i, j in zip(df.pred, df[target])]
         df['right'] = df['bool'] == df['p_bool']
         
         print(df)
@@ -87,5 +89,4 @@ class Pred_report():
         
         plt.show()
 
-        df = df.set_index(index)
         df.to_csv('./notebooks/pred.csv')
