@@ -38,9 +38,12 @@ class LTSM_model():
         self.data = data
         self.report = report
         x_train, x_test, y_train, y_test = data.get_train_test()
-
+        # print(x_train[-1:][0][-1:][0][:1])
+        # print(x_train[-1:][0][-1:][0][:1].shape)
+        # print(x_train.shape)
+        # sys.exit()
         self.model = Sequential()
-
+        input_tensor = tf.keras.Input(shape=(x_train.shape[1], x_train.shape[2]))
         self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
         self.model.add(Dropout(0.25))
         self.model.add(LSTM(300, return_sequences=False))
@@ -51,12 +54,27 @@ class LTSM_model():
         self.model.add(Dense(16, activation='relu'))
         self.model.add(Dense(1))
 
-        self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_percentage_error'])
+        self.model.compile(loss=self.custon_loss(input_tensor), optimizer='adam', metrics=['mean_absolute_percentage_error'])
         self.model.fit(x_train, y_train, epochs=35, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
         # self.model.summary()
         self.print_graph()
         self.model.save(self.path)
+    
+    def custon_loss(self, input_tensor):
+        def loss(y_actual, y_predicted):
+            i = input_tensor[0][-1:][0][:1]
+            mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
+            return K.switch((K.greater(i, y_predicted) & (K.greater(i, y_actual)) | (K.less(i, y_predicted)) & (K.less(i, y_actual))), mse, (mse ** 2))
+        return loss
+
+    # def custon_loss(self, input_tensor):
+    #     def loss(y_actual, y_predicted):
+    #         i = input_tensor[0][-1:][0][:1]
+    #         mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
+    #         if ((i > y_actual) & (i > y_predicted) | (i < y_actual) & (i < y_predicted)): return mse
+    #         else: return mse ** 2
+    #     return loss
 
     def predict(self, x) -> np.array:
         self.print_graph()
