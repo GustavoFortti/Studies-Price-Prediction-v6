@@ -1,3 +1,3 @@
-### Price_prediction_v6
+# Price_prediction_v6
 
-# project results in notebooks/pred.ipynb
+### project results in notebooks/pred.ipynb
