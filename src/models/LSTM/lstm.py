@@ -1,4 +1,5 @@
 import sys
+from keras.engine.keras_tensor import KerasTensor
 
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ import tensorflow as tf
 from keras.models import Sequential, Model
 from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, BatchNormalization, GRU
 from keras import backend as K
-
+import keras
 import random
 from sklearn.preprocessing import Binarizer
 class LTSM_model():
@@ -38,10 +39,6 @@ class LTSM_model():
         self.data = data
         self.report = report
         x_train, x_test, y_train, y_test = data.get_train_test()
-        # print(x_train[-1:][0][-1:][0][:1])
-        # print(x_train[-1:][0][-1:][0][:1].shape)
-        # print(x_train.shape)
-        # sys.exit()
         self.model = Sequential()
         input_tensor = tf.keras.Input(shape=(x_train.shape[1], x_train.shape[2]))
         self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
@@ -63,18 +60,10 @@ class LTSM_model():
     
     def custon_loss(self, input_tensor):
         def loss(y_actual, y_predicted):
-            i = input_tensor[0][-1:][0][:1]
             mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
-            return K.switch((K.greater(i, y_predicted) & (K.greater(i, y_actual)) | (K.less(i, y_predicted)) & (K.less(i, y_actual))), mse, (mse ** 2))
+            ax_input = input_tensor[0][-1:][0][:1]
+            return K.switch((K.greater_equal(ax_input, y_predicted) & (K.greater_equal(ax_input, y_actual)) | (K.less_equal(ax_input, y_predicted)) & (K.less_equal(ax_input, y_actual))), mse, (mse * 10))
         return loss
-
-    # def custon_loss(self, input_tensor):
-    #     def loss(y_actual, y_predicted):
-    #         i = input_tensor[0][-1:][0][:1]
-    #         mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
-    #         if ((i > y_actual) & (i > y_predicted) | (i < y_actual) & (i < y_predicted)): return mse
-    #         else: return mse ** 2
-    #     return loss
 
     def predict(self, x) -> np.array:
         self.print_graph()
