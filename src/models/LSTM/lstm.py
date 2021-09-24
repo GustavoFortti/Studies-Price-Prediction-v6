@@ -8,8 +8,7 @@ from keras.models import Sequential, Model
 from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, BatchNormalization, GRU
 from keras import backend as K
 import keras
-import random
-from sklearn.preprocessing import Binarizer
+
 class LTSM_model():
     def __init__(self, config: dict) -> None:
         self.epochs = config['model']['LSTM']['epochs']
@@ -61,7 +60,10 @@ class LTSM_model():
     def custon_loss(self, input_tensor):
         def loss(y_actual, y_predicted):
             mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
-            ax_input = input_tensor[0][-1:][0][:1]
+            mse = tf.reshape(mse, [1, 1])
+            y_actual = keras.layers.core.Reshape([1, 1])(y_actual)[0]
+            ax_input = tf.reshape(K.sum(input_tensor[0][-1:][0][:1]), [1, 1])
+
             return K.switch((K.greater_equal(ax_input, y_predicted) & (K.greater_equal(ax_input, y_actual)) | (K.less_equal(ax_input, y_predicted)) & (K.less_equal(ax_input, y_actual))), mse, (mse * 10))
         return loss
 

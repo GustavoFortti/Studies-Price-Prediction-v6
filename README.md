@@ -1,3 +1,3 @@
-# Price_prediction_v6
+# Price-prediction-v6
 
 ### project results in notebooks/pred.ipynb
