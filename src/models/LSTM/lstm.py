@@ -1,3 +1,4 @@
+from random import randint
 import sys
 from keras.engine.keras_tensor import KerasTensor
 
@@ -8,7 +9,6 @@ from keras.models import Sequential, Model
 from tensorflow.python.keras.layers import LSTM, Dense, Dropout, Bidirectional, BatchNormalization, GRU
 from keras import backend as K
 import keras
-
 class LTSM_model():
     def __init__(self, config: dict) -> None:
         self.epochs = config['model']['LSTM']['epochs']
@@ -38,9 +38,10 @@ class LTSM_model():
         self.data = data
         self.report = report
         x_train, x_test, y_train, y_test = data.get_train_test()
+
         self.model = Sequential()
-        input_tensor = tf.keras.Input(shape=(x_train.shape[1], x_train.shape[2]))
-        self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
+        input_tensor = tf.constant(x_train, dtype='float32')
+        self.model.add(LSTM(300, return_sequences=True, input_shape=(input_tensor.shape[1], input_tensor.shape[2])))
         self.model.add(Dropout(0.25))
         self.model.add(LSTM(300, return_sequences=False))
         self.model.add(Dropout(0.25))
@@ -50,8 +51,13 @@ class LTSM_model():
         self.model.add(Dense(16, activation='relu'))
         self.model.add(Dense(1))
 
+
+        # print(input_tensor)
+        # print(x_train.shape[2])
+        # print(x_train.shape[1])
+        # sys.exit()
         self.model.compile(loss=self.custon_loss(input_tensor), optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=35, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=3, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
         # self.model.summary()
         self.print_graph()
@@ -62,9 +68,15 @@ class LTSM_model():
             mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
             mse = tf.reshape(mse, [1, 1])
             y_actual = keras.layers.core.Reshape([1, 1])(y_actual)[0]
-            ax_input = tf.reshape(K.sum(input_tensor[0][-1:][0][:1]), [1, 1])
+            ax_input = tf.reshape(input_tensor[[0]][-1:][0][:1], [1, 1])
 
-            return K.switch((K.greater_equal(ax_input, y_predicted) & (K.greater_equal(ax_input, y_actual)) | (K.less_equal(ax_input, y_predicted)) & (K.less_equal(ax_input, y_actual))), mse, (mse * 10))
+            # print(tf.print(ax_input))
+            # print(ax_input)
+
+            greater_equal = tf.reshape(tf.math.logical_and(tf.math.greater_equal(ax_input, y_actual), tf.math.greater_equal(ax_input, y_predicted))[0], [1, 1])
+            less_equal = tf.reshape(tf.math.logical_and(tf.math.less_equal(ax_input, y_actual), tf.math.less_equal(ax_input, y_predicted))[0], [1, 1])
+            logical_or = tf.reshape(tf.math.logical_or(greater_equal, less_equal)[0], [1, 1])
+            return tf.cond(logical_or, lambda: mse, lambda: tf.math.multiply(mse, 10))
         return loss
 
     def predict(self, x) -> np.array:
