@@ -54,7 +54,8 @@ class Config():
             os.makedirs(path)
             os.makedirs(path + "/models")
             os.makedirs(path + "/config")
-            os.makedirs(self.config['data']['path'])
+            if (not os.path.exists(self.config['data']['path'])):
+                os.makedirs(self.config['data']['path'])
 
             f = open(path + '/config/aplication.py', 'w')
             f.write("CONF = " + str(self.config))

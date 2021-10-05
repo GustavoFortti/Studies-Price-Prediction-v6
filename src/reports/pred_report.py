@@ -4,6 +4,9 @@ import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, r2_score, explained_variance_score
+from sklearn.metrics import mean_squared_log_error, mean_poisson_deviance, mean_gamma_deviance, mean_tweedie_deviance, max_error
 
 pd.options.mode.chained_assignment = None 
 
@@ -75,6 +78,24 @@ class Pred_report():
         df['right'] = df['bool'] == df['p_bool']
         
         print(df)
+        print('\n')
+
+        def adjusted_r2(y_test, y_pred, n_features):
+            adj_r2 = (1 - ((1 - r2_score(y_test, y_pred)) * (len(y_test) - 1)) / (len(y_test) - n_features - 1))
+            return adj_r2
+                
+        print("MSE = " + str(mean_squared_error(df['y'], df['pred'])))
+        print("RMSE = " + str(mean_squared_error(df['y'], df['pred'], squared=False)))
+        print("MAPE = " + str(mean_absolute_percentage_error(df['y'], df['pred']) * 100))
+        print("R2 = " + str(r2_score(df['y'], df['pred'])))
+        print("adjust R2 = " + str(adjusted_r2(df['y'], df['pred'], 105)))
+        print("RMSLE = " + str(mean_squared_log_error(df['y'], df['pred'])))
+        print("explained_variance_score = " + str(explained_variance_score(df['y'], df['pred'])))
+        print("mean_poisson_deviance = " + str(mean_poisson_deviance(df['y'], df['pred'])))
+        print("mean_gamma_deviance = " + str(mean_gamma_deviance(df['y'], df['pred'])))
+        print("mean_tweedie_deviance = " + str(mean_tweedie_deviance(df['y'], df['pred'])))
+        print("max_error = " + str(max_error(df['y'], df['pred'])))
+
         print('\n')
         print(df['right'].value_counts(normalize=True))
         print(df['right'].value_counts())

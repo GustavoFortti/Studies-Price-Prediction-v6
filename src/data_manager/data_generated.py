@@ -1,7 +1,7 @@
 import os
 import sys
 from copy import deepcopy
-
+from datetime import datetime
 import pandas as pd
 
 from src.data_manager.indicators_manager import Inticators_manager
@@ -12,6 +12,7 @@ class Data_generated():
         self.config = config
         self.path = config['path']
         self.mode = mode
+        self.date = datetime.today().strftime('%Y%m%d')
 
         api = Api_market(mode, config)
         df = api.data
@@ -19,13 +20,14 @@ class Data_generated():
         self.size = len(df)
         self.reduce = int(self.size / config['data']['reduce'])
 
-        if ((self.mode in ['tr', 'td', 'te'])) & (os.path.isfile(self.path + 'data.csv')): self.predictor = self.read_data()
+        if ((self.mode in ['tr', 'td', 'te'])) & (os.path.isfile(self.path + 'data.csv')): self.predictor = self.read_data('data')
+        elif ((self.mode == 'pr') & (os.path.isfile(self.path + self.date + '.csv'))): self.predictor = self.read_data(self.date)
         elif (self.mode != 'te'): self.predictor = self.generate_data(deepcopy(df), True)
         self.target = self.generate_data(deepcopy(self.predictor.loc[:, config['data']['predict']['columns']]), False)
         if (self.mode == 'gd'): sys.exit()
         
-    def read_data(self) -> pd.DataFrame:
-        return pd.read_csv(self.path + 'data.csv', index_col='Date')
+    def read_data(self, file) -> pd.DataFrame:
+        return pd.read_csv(self.path + file + '.csv', index_col='Date')
 
     def generate_data(self, data, is_predict) -> pd.DataFrame:
         indicators = Inticators_manager(is_predict, self.config)
@@ -42,7 +44,9 @@ class Data_generated():
             if (self.mode in ["pr", "td"]): break
 
         df = df.iloc[::-1]
-        if ((is_predict) & (self.mode in ['gd', 'tr'])): df.to_csv(self.path + 'data.csv')
+        if (is_predict): 
+            if (self.mode in ['gd', 'tr']): df.to_csv(self.path + 'data.csv')
+            if (self.mode == 'pr'): df.to_csv(self.path + self.date + '.csv')
         return df
 
     def get_predictor(self) -> pd.DataFrame:

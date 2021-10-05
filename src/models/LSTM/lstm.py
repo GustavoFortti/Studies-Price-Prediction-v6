@@ -38,38 +38,35 @@ class LTSM_model():
         self.data = data
         self.report = report
         x_train, x_test, y_train, y_test = data.get_train_test()
-   
+
+        self.model = Sequential()
+        self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
+        self.model.add(Dropout(0.25))
+        self.model.add(LSTM(300, return_sequences=False))
+        self.model.add(Dropout(0.25))
+
+        self.model.add(Dense(50, activation='relu'))
+        self.model.add(Dense(30, activation='relu'))
+        self.model.add(Dense(16, activation='relu'))
+        self.model.add(Dense(1))
+        
+        self.model.compile(loss='mse', optimizer='adam', metrics=['mean_absolute_percentage_error'])
+        self.model.fit(x_train, y_train, epochs=10, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+
+        # self.model.summary()
+        self.print_graph()
+        self.model.save(self.path)
+
+    def regression_2(self, data: object, report: object) -> None:
+        self.data = data
+        self.report = report
+        x_train, x_test, y_train, y_test = data.get_train_test()
+
         input_tensor = tf.constant(x_train, dtype='float32', shape=(x_train.shape[0], x_train.shape[1], x_train.shape[2]))
         index = np.array(range(x_train.shape[0]))
         _input = Input(shape=(x_train.shape[1], x_train.shape[2]), dtype='float32')
         _target = Input(shape=(None, y_train.shape[1]), dtype='float32')
         _out = Input(shape=(None, y_train.shape[1]), dtype='float32')
-
-        # self.model = Sequential()
-        # self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
-        # self.model.add(Dropout(0.25))
-        # self.model.add(LSTM(300, return_sequences=False))
-        # self.model.add(Dropout(0.25))
-
-        # self.model.add(Dense(50, activation='relu'))
-        # self.model.add(Dense(30, activation='relu'))
-        # self.model.add(Dense(16, activation='relu'))
-        # self.model.add(Dense(1))
-        
-        # self.model.compile(loss=self.input_loss(input_tensor), optimizer='adam', metrics=['mean_absolute_percentage_error'], experimental_run_tf_function=False)
-        # self.model.fit(x_train, y_train, epochs=3, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
-        ######################        
-        # inp = Input(shape=(x_train.shape[1], x_train.shape[2]), dtype=tf.float32)
-        # targets = Input(shape=(1,), dtype=tf.float32)
-        # w = Input(shape=(1,), dtype=tf.float32)
-
-        # out = Dense(1)(inp)
-        # m = Model(inputs=[inp, w, targets], outputs=out)
-        # m.add_loss(self.loss(targets, out, inp))
-        # m.compile(loss=None, optimizer='adam')
-        # x = np.ones((512,1))
-        # m.fit([x, x, x], epochs=10)
-
         seq = Sequential()(_input)
 
         l1 = LSTM(300, dropout=0.25, return_sequences=True)(seq)
@@ -117,29 +114,9 @@ class LTSM_model():
         tf.cond(tf.equal(greater_equal, tf.constant(True)), lambda: mse, lambda: tf.math.multiply(mse, 10))
         return tf.cond(logical_or, lambda: mse, lambda: tf.math.multiply(mse, 10))
 
-    def input_loss(self, input_tensor, index):
-        def loss(y_actual, y_predicted):
-            print(index)
-            sys.exit()
-            mse = K.mean(K.sum(K.square(y_actual - y_predicted)))
-            mse = tf.reshape(mse, [1, 1])
-            y_actual = keras.layers.core.Reshape([1, 1])(y_actual)[0]
-            ax_input = tf.reshape(input_tensor[0][-1:][0][:1], [1, 1])
-            # ax_input = tf.keras.backend.variable(ax_input)
-            print(input_tensor)
-
-            greater_equal = tf.reshape(tf.math.logical_and(tf.math.greater_equal(tf.constant(1.1), y_actual), tf.math.greater_equal(tf.constant(1.1), y_predicted))[0], [1, 1])
-            less_equal = tf.reshape(tf.math.logical_and(tf.math.less_equal(tf.constant(1.1), y_actual), tf.math.less_equal(tf.constant(1.1), y_predicted))[0], [1, 1])
-            logical_or = tf.reshape(tf.math.logical_or(greater_equal, less_equal)[0], [1, 1])
-            print(greater_equal)
-            print(less_equal)
-            print(logical_or)
-            # tf.cond(tf.equal(greater_equal, tf.constant(True), lambda: mse, lambda: tf.math.multiply(mse, 10)))
-            return tf.cond(logical_or, lambda: mse, lambda: tf.math.multiply(mse, 10))
-        return loss
 
     def predict(self, x) -> np.array:
-        self.print_graph()
+        # self.print_graph()
         model = tf.keras.models.load_model(self.path)
         return model.predict(x)
 
