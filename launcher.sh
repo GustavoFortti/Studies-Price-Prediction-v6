@@ -1,7 +1,7 @@
-rm ./data/treined/$1/data_predict/test.csv
+# rm ./data/treined/$1/data_predict/test.csv
 
-for i in `seq 1 22`; do
-    python3 main.py -m te -t 2 -c $1 -q 1 -i $i
+for i in `seq 6 28`; do
+    python3 main.py -m te -t 2 -c XOM -q 3 -i $i
     sleep 5
 done
 

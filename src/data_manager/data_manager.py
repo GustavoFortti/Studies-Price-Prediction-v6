@@ -19,7 +19,7 @@ class Data_manager():
 
         data_gen = Data_generated(self.mode, self.config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
-        print(x)
+        print(x.iloc[:-(self.index), :])
         self.size = int(len(x) * self.config['model']['slice'])
 
         self.report.set_df_origin(self.df_slice(x, True), self.df_slice(y, True))

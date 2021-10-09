@@ -2,13 +2,13 @@ import os
 
 class Config():
     def __init__(self, currency: str, question: int, _type: int) -> None:
-        option = { 1: "Q1", 2: "Q2", 3: "Q3", 4: "Q4", 5: "Q5" }
+        option = { 1: "Q1", 2: "Q2", 3: "Q3", 4: "Q4", 5: "Q5", 6: "Q6", 7: "Q7", 8: "Q8", 9: "Q9"}
         currency = currency
         name = currency + '_' + option[int(question)] + ("C" if (int(_type) == 1) else "R")
         print(name)
 
         TARGET = { 
-            "columns": [["Close"], ["Open"], ["High"], ["Low"], ["High", "Low"]], "description": [[0, 1], [0, 1, -1]]
+            "columns": [["Close"], ["Open"], ["High"], ["Low"], ["Close_labels"], ["Open_labels"], ["High_labels"], ["Low_labels"]], "description": [[0, 1], [0, 1, -1]]
         }
 
         target = TARGET['columns'][question - 1]

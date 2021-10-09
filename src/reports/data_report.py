@@ -13,7 +13,6 @@ class Data_report():
         self.mode = mode
 
     def set_df_origin(self, x, y) -> None:
-        x = x.iloc[:, :4]
         x['target'] = y['target'].values
         self.df_origin = x
 
