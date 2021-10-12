@@ -23,7 +23,7 @@ class Model():
 
     def train(self, data: object) -> None:
         catalyst = self.model(self.config)
-        create_model = catalyst.classification if (self.config['model']['type'] == 1) else catalyst.regression
+        create_model = catalyst.classification if (self.config['model']['model_type'] == 1) else catalyst.regression
         create_model(data, self.report)
 
     def pred(self, x: np.array) -> None:

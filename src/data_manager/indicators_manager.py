@@ -1,5 +1,6 @@
+import sys
+
 from copy import deepcopy
-from os import name
 import numpy as np
 import pandas as pd
 import ta
@@ -17,21 +18,20 @@ class Inticators_manager():
 
     def generate(self, df) -> pd.DataFrame:
         df = deepcopy(df)
-        if (self.is_predict):
-            return self.prediction(df)
-            # return df
-        else:
-            return self.target(df)
+        if (self.is_predict): return self.prediction(df)
+        else: return self.target(df)
             
     def target(self, df) -> pd.DataFrame:
-        if (self.config['model']['type'] == 1):
+        if (self.config['model']['model_type'] == 1):
             ax_df = df.loc[:, self.config['data']['target']['columns']]
             ax_df = self.convert_col_to_bool(ax_df, ax_df.columns)
             if (len(ax_df.columns) >= 2): ax_df = self.cross_bool_cols(ax_df, [ax_df.columns])
             return pd.DataFrame(np.array(ax_df), columns=['target'], index=df.index)
         
-        df = df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.array([0]), columns=self.config['data']['target']['columns'])).iloc[1:, :]
+        df = df.loc[:, self.config['data']['target']['columns']].append(pd.DataFrame(np.zeros((self.config['data']['time_ahead'] + 1)), columns=self.config['data']['target']['columns'])).iloc[1:, :]
         df.columns = ['target']
+        time_ahead = self.config['data']['time_ahead']
+        if (time_ahead > 0): df = df.iloc[time_ahead:, :]
         return df
 
     def prediction(self, df) -> pd.DataFrame:

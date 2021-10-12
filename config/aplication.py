@@ -1,20 +1,20 @@
 import os
 
 class Config():
-    def __init__(self, currency: str, question: int, _type: int) -> None:
+    def __init__(self, currency: str, question: int, model_type: int, time_ahead: int=0) -> None:
         option = { 1: "Q1", 2: "Q2", 3: "Q3", 4: "Q4", 5: "Q5", 6: "Q6", 7: "Q7", 8: "Q8", 9: "Q9"}
         currency = currency
-        name = currency + '_' + option[int(question)] + ("C" if (int(_type) == 1) else "R")
+        name = currency + '_' + option[int(question)] + ("C" if (int(model_type) == 1) else "R") + '_TAH_' + str(time_ahead)
         print(name)
 
         TARGET = { 
-            "columns": [["Close"], ["Open"], ["High"], ["Low"], ["Close_labels"], ["Open_labels"], ["High_labels"], ["Low_labels"]], "description": [[0, 1], [0, 1, -1]]
+            "columns": [["Close"], ["Open"], ["High"], ["Low"]], "description": [[0, 1], [0, 1, -1]]
         }
 
         target = TARGET['columns'][question - 1]
         description = TARGET["description"][0 if len(target) == 1 else 1]
-        epochs = 10 if (_type == 2) else 5
-        timesteps = 21 if (_type == 2) else 8
+        epochs = 10 if (model_type == 2) else 5
+        timesteps = 34 if (model_type == 2) else 8
 
         self.config = {
             "name": name,
@@ -25,7 +25,7 @@ class Config():
             },
             "model": {
                 "name": "LSTM",
-                "type": _type,
+                "model_type": model_type,
                 "slice": 0.01,
                 "LSTM": {
                     "epochs": epochs
@@ -34,6 +34,7 @@ class Config():
             "data": {
                 "time": "1D",
                 "timesteps": timesteps,
+                "time_ahead": time_ahead,
                 "predict": {
                     "columns": ["Close", "High", "Low", "Open", "Volume"]
                 },
