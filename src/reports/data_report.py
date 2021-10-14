@@ -15,6 +15,7 @@ class Data_report():
     def set_df_origin(self, x, y) -> None:
         x['target'] = y['target'].values
         self.df_origin = x
+        print(x)
 
     def set_df_test(self, x, y) -> None:
         self.df_x_test = x

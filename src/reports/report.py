@@ -19,4 +19,4 @@ class Report(Data_report, Pred_report, Price_report):
         self.mode = mode
 
     def report_pred(self, pred):
-        self.print_resp(pred, self.df_origin)
+        self.print_resp(pred, self.df_origin, self.df_y_test)

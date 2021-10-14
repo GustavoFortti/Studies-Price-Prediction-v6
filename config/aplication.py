@@ -8,7 +8,7 @@ class Config():
         print(name)
 
         TARGET = { 
-            "columns": [["Close"], ["Open"], ["High"], ["Low"]], "description": [[0, 1], [0, 1, -1]]
+            "columns": [["Close"], ["Open"], ["High"], ["Low"], ['trend_ema_fast'], ['trend_ema_slow'], ['ema_5']], "description": [[0, 1], [0, 1, -1]]
         }
 
         target = TARGET['columns'][question - 1]

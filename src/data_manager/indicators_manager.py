@@ -10,6 +10,7 @@ from src.data_manager.indicators_analysis.poly_interpolation import PolyInter
 from src.data_manager.indicators_analysis.fibonacci import Fibonacci
 from src.data_manager.indicators_analysis.sar_parabolic import Parabolic_sar
 from src.data_manager.indicators_analysis.date_time import Date_time
+from src.data_manager.indicators_analysis.macd import Ema
 
 class Inticators_manager():
     def __init__(self, is_predict: bool, config: dict) -> None:
@@ -54,10 +55,12 @@ class Inticators_manager():
             {"name": "PolyInter", "columns": ['Close', 'Open', 'High', 'Low'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
         ]
     
+        
         df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
         df = self.convert_col_to_bool(df, ['Close', 'High', 'Low', 'Open'])
         df = self.indicators_analysis(df, indicators)
         df = self.col_parabolic_sar(df, ['High', 'Low'], False)
+        df = self.col_ema_5(df, ['Close'])
         df = self.col_date(df)
         
         columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
@@ -104,6 +107,12 @@ class Inticators_manager():
     def col_parabolic_sar(self, df, cols, bool_col, params={"af":0.02, "amax":0.2}, name='parabolic_sar') -> pd.DataFrame:
         df = deepcopy(df)
         df[name] = Parabolic_sar(df.loc[:, cols], params, cols[0], cols[1]).values
+        return df
+
+    def col_ema_5(self, df, cols, params=5, name='ema_5') -> pd.DataFrame:
+        df = deepcopy(df)
+        ema = Ema(params)
+        df[name] = ema.calc_ema(df[cols].values)
         return df
 
     def col_date(self, df) -> pd.DataFrame:

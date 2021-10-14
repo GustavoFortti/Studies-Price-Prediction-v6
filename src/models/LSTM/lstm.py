@@ -116,7 +116,6 @@ class LTSM_model():
     #     return tf.cond(logical_or, lambda: mse, lambda: tf.math.multiply(mse, 10))
 
     def predict(self, x) -> np.array:
-        # self.print_graph()
         model = tf.keras.models.load_model(self.path)
         return model.predict(x)
 
