@@ -51,11 +51,13 @@ class LTSM_model():
         self.model.add(Dense(1))
 
         self.model.compile(loss='mse', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.fit(x_train, y_train, epochs=10, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
 
         # self.model.summary()
         self.print_graph()
+
+        
         self.model.save(self.path)
 
     # def regression_2(self, data: object, report: object) -> None:
@@ -120,5 +122,5 @@ class LTSM_model():
         return model.predict(x)
 
     def print_graph(self):
-        self.report.print_regression_train(self.model, self.report.df_x_test, self.report.df_y_test, self.report.df_x_origin_scaller, self.report.df_y_origin_scaller, self.report.df_origin)
+        self.report.print_resp(self.model.predict(self.report.df_x_test), self.report.df_origin, self.report.df_y_test)
 

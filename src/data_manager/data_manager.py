@@ -39,7 +39,7 @@ class Data_manager():
         switch = {
             'tr': df[:-self.size],
             'rt': df[-self.size:(-(1 + self.config['data']['time_ahead']))],
-            'te': df[-(1 + self.index):-(self.index)],
+            'te': df[-(100 + self.index):-(self.index)],
             'pr': df[-1:]
         }
 

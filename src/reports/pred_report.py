@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pandas as pd
 import numpy as np
@@ -25,14 +25,17 @@ class Pred_report():
         else: 
             out = self.scaler['target'].inverse_transform(pred)
 
-        if((self.mode == 'pr')): 
-            print(out)
-        if((self.config['model']['model_type'] == 2) & (self.mode == 'te')): self.print_regression_test(df_origin, out, df_y_test)
+        print(out)
+        print(df_origin)
+        if (self.mode == 'pr'): print(out)
+        if ((self.config['model']['model_type'] == 2) & (self.mode == 'tr')): self.plot_regression(df_origin, out, df_y_test)
 
-    def print_regression_test(self, df_origin, out, df_y_test):
+    def plot_regression(self, df_origin, out, df_y_test):
         df_y_test = self.scaler['target'].inverse_transform(df_y_test)
+        print(df_y_test)
         df = df_origin
-        index = df_origin.index
+        index = df.index.astype('datetime64[ns]')
+        
         target = self.config['data']["target"]["columns"][0]
         columns = self.config['data']["predict"]["columns"]
         if (target not in self.config['data']["predict"]["columns"]): columns.append(target)
@@ -43,46 +46,29 @@ class Pred_report():
         df['bool'] = [0 if j >= i else 1 for i, j in zip(df.target, df[target])]
         df['p_bool'] = [0 if j > i else 1 for i, j in zip(df.pred, df[target])]
         df['right'] = df['bool'] == df['p_bool']
-        df['name'] = self.config['name'],
-        df['target_name'] = self.config['data']['target']['columns'][0]
 
+        add_constant_column = lambda col: [col for i in range(len(df))]
+        df['name'] = add_constant_column(self.config['name'])
+        df['target_name'] = add_constant_column(self.config['data']['target']['columns'][0])
         days_ahead = int(self.config['name'][-1:]) + 1
-        df['days_ahead'] = str(days_ahead)
-        df['day_predict'] = datetime.strptime(index[0], '%Y-%m-%d') + timedelta(days=days_ahead)
-        df = df.reset_index()
-        print(df)
-
-        # ler o df que ja existe
-        # gravar o df atual
-        
-        # self.graph_analysis(index, df)
-        
-    def print_regression_train(self, model, df_x_test, df_y_test, df_x_origin_scaller, df_y_origin_scaller, df_origin):
-        index = df_origin.index
-
-        target = self.config['data']["target"]["columns"][0]
-        df = pd.DataFrame(df_x_origin_scaller, columns=df_origin.columns[:-1])
-        columns = self.config['data']["predict"]["columns"]
-        if (target not in self.config['data']["predict"]["columns"]): columns.append(target)
-        print(columns)
-        df = df.loc[:, columns] 
-        df = df.set_index(index)
-        df['target'] = df_y_origin_scaller
-        
-        # pd.set_option("display.max_rows", None, "display.max_columns", None)
-
-        pred = model.predict(df_x_test)
-        df['pred'] = pred
-        df['error'] = abs(df['pred'] - df['target'])
-        df['bool'] = [0 if j >= i else 1 for i, j in zip(df.target, df[target])]
-        df['p_bool'] = [0 if j > i else 1 for i, j in zip(df.pred, df[target])]
-        df['right'] = df['bool'] == df['p_bool']
-
-        
-        print(df)
-        print('\n')
+        df['days_ahead'] = add_constant_column(str(days_ahead))
+        slice_i = int(self.config['name'][-1:]) + 1
+        df['day_predict'] = np.append([str(i)[:10] for i in index[slice_i:]], [str(timedelta(days=slice_i) + i)[:10] for i in index[-slice_i:]])
 
         self.graph_analysis(index, df)
+        for i in range(1, (len(df) + 1), 25):
+            print("====================================================================")
+            print("index = " + str(i) + "\n")
+            self.graph_analysis(index[i: i+25], df.iloc[i: i+25, :])
+
+        df = df.reset_index()
+
+        file = self.config['data']['path'] + "data_test.csv"
+        flag = os.path.isfile(file)
+        if (flag): 
+            df_ax = pd.read_csv(file)
+            df = df_ax.append(df, ignore_index=True)
+        df.to_csv(file, index=False)
 
     def graph_analysis(self, index, df):
         def adjusted_r2(y_test, y_pred, n_features):
@@ -122,36 +108,39 @@ class Pred_report():
         plt.xticks(rotation=45) 
         plt.show()
 
-        # df.to_csv('./notebooks/pred.csv')
+    def plot_market_price(self, df):
 
+        def plot_graph_market():
+            for idx, val in df.iterrows():
+                plt.plot([idx, idx], [val['Low'], val['High']], color='Black')
 
-    def print_regression_test_for_index(self, df_origin, out):
+        def plot_graph_real(col, color):
+            plt.plot(df.index, df[col], color=color)
+            plt.scatter(df.index, df[col], color=color)
 
-        origin = self.df_origin[self.config['data']['target']['columns'][0]].values[0]
-        target = self.df_origin['target'].values[0]
-        pred = out[0][0]
-        direction_pred = 1 if pred > origin else 0 
-        direction_target = 1 if target > origin else 0
-        erro = abs(pred - target)
+        def plot_graph_pred(days_ahead, df_temp):
+            x, y = [], []
+            target = []
+            color = []
+            ax_df = df_temp[df_temp['days_ahead'] == days_ahead]
+            [y.append(ax_df['day_predict'].values[0][:10]) for i in range(3)]
+            for i, j in zip(colors_0, range(3)):
+                target.append(ax_df['target'].values[j])
+                x.append(ax_df['pred'].values[j])
+                color.append(i)
+            plt.scatter(y, x, linewidths=3, s=300, facecolors='none', edgecolors=color)
+            
+        targets_name = df['target_name'].drop_duplicates().values
+        colors_0 = ['red', 'royalblue', 'limegreen']
+        colors_1 = ['indianred', 'blue', 'green']
 
-        data = {
-            "date": df_origin.index[0],
-            "name": self.config['name'], 
-            "target_name": self.config['data']['target']['columns'][0],
-            "origin": origin,
-            "pred": pred, 
-            "target": target,
-            "direction_target": direction_target,
-            "direction_pred": direction_pred,
-            "erro": erro
-        }
+        df = df.sort_values(by='target_name', ascending=False)
+        df['days_ahead'] = df['days_ahead'].astype('int32')
+        plot_graph_market()
+        plot_graph_real('Close', 'Black')
+        [plot_graph_real(i, j) for i, j in zip(targets_name, colors_0)]
+        [plot_graph_pred((i + 1), df) for i in range(4)]
 
-        file = self.config['data']['path'] + "test.csv"
-        flag = os.path.isfile(file)
-        if (flag): df = pd.read_csv(file)
-        else: df = pd.DataFrame(data, index=[0])
-        if(flag): df = df.append(data, ignore_index=True)
-
-        print(df)
-
-        df.to_csv(file, index=False)
+        plt.xticks(rotation=45) 
+        plt.grid(True)
+        plt.show()
