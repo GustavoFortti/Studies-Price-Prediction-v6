@@ -16,32 +16,27 @@ class Pred_report():
         self.config = config
         self.mode = mode
 
-    def print_resp(self, pred, df_origin, df_y_test=None) -> None:
+    def print_resp(self, pred, df_origin) -> None:
         if (self.config['model']['model_type'] == 1):
             ax_df = pd.DataFrame(pred, columns=self.config['data']["target"]["description"])
             ax_df = ax_df.T
             ax_df.columns = ["target"]
             out = ax_df.sort_values(by="target", ascending=False)
         else: 
-            out = self.scaler['target'].inverse_transform(pred)
+            pred = self.scaler['target'].inverse_transform(pred)
 
-        print(out)
-        print(df_origin)
-        if (self.mode == 'pr'): print(out)
-        if ((self.config['model']['model_type'] == 2) & (self.mode == 'tr')): self.plot_regression(df_origin, out, df_y_test)
+        if (self.mode == 'pr'): print(pred)
+        if ((self.config['model']['model_type'] == 2) & (self.mode in ['te', 'tr'])): self.plot_regression(df_origin, pred)
 
-    def plot_regression(self, df_origin, out, df_y_test):
-        df_y_test = self.scaler['target'].inverse_transform(df_y_test)
-        print(df_y_test)
+    def plot_regression(self, df_origin, pred):
         df = df_origin
         index = df.index.astype('datetime64[ns]')
-        
         target = self.config['data']["target"]["columns"][0]
         columns = self.config['data']["predict"]["columns"]
+        columns.append('target')
         if (target not in self.config['data']["predict"]["columns"]): columns.append(target)
         df = df.loc[:, columns] 
-        df['target'] = df_y_test
-        df['pred'] = out
+        df['pred'] = pred
         df['error'] = abs(df['pred'] - df['target'])
         df['bool'] = [0 if j >= i else 1 for i, j in zip(df.target, df[target])]
         df['p_bool'] = [0 if j > i else 1 for i, j in zip(df.pred, df[target])]
@@ -55,20 +50,25 @@ class Pred_report():
         slice_i = int(self.config['name'][-1:]) + 1
         df['day_predict'] = np.append([str(i)[:10] for i in index[slice_i:]], [str(timedelta(days=slice_i) + i)[:10] for i in index[-slice_i:]])
 
+        print(df)
         self.graph_analysis(index, df)
-        for i in range(1, (len(df) + 1), 25):
-            print("====================================================================")
-            print("index = " + str(i) + "\n")
-            self.graph_analysis(index[i: i+25], df.iloc[i: i+25, :])
+        # for i in range(1, (len(df) + 1), 25):
+        #     print("====================================================================")
+        #     print("index = " + str(i) + "\n")
+        #     self.graph_analysis(index[i: i+25], df.iloc[i: i+25, :])
 
         df = df.reset_index()
 
-        file = self.config['data']['path'] + "data_test.csv"
-        flag = os.path.isfile(file)
-        if (flag): 
-            df_ax = pd.read_csv(file)
-            df = df_ax.append(df, ignore_index=True)
+        name = "1_data_test_" + self.config['name'] + ".csv"
+        file = self.config['data']['path'] + name
+        # flag = os.path.isfile(file)
+        # if (flag): 
+        #     df_ax = pd.read_csv(file)
+        #     df = df_ax.append(df, ignore_index=True)
         df.to_csv(file, index=False)
+        df.to_csv('./notebooks/data/' + name , index=False)
+        print('\n')
+        print(df)
 
     def graph_analysis(self, index, df):
         def adjusted_r2(y_test, y_pred, n_features):
@@ -97,15 +97,27 @@ class Pred_report():
         print('\n')
         print(df.describe())
 
-        plt.plot(index, df.target, label = "target")
-        plt.plot(index, df.pred, label = "pred")
+        plt.plot(df.index, df.target, label = "pred")
+        plt.scatter(df.index, df[self.config['data']["target"]["columns"][0]], label = "pred", color='grey')
+        plt.scatter(df.index, df.pred, label = "pred", color='red', linewidth=2)
         plt.grid(True)
-        plt.xticks(rotation=45) 
+        plt.xticks(rotation=90) 
+
+        for i, val in df.iterrows():
+            color = 'royalblue' if val['right'] else 'tomato'
+            plt.plot([i, i], [val['target'], val['pred']], label = "pred", linewidth=1, color=color)
+
+        plt.ylabel("preço", fontsize=20)
+        plt.xlabel("Dias", fontsize=20)
+        plt.grid(True)
         plt.show()
 
-        plt.scatter(index, df['error'], label = "error")
+        plt.scatter(df.index, df['error'], label = "error")
         plt.grid(True)
-        plt.xticks(rotation=45) 
+        plt.title("Distancia entre predição e a variavel target (Error)", fontsize=20)
+        plt.ylabel("Erro em relação ao preço", fontsize=20)
+        plt.xlabel("Dias", fontsize=20)
+        plt.xticks(rotation=90) 
         plt.show()
 
     def plot_market_price(self, df):

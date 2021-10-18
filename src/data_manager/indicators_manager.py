@@ -37,34 +37,33 @@ class Inticators_manager():
 
     def prediction(self, df) -> pd.DataFrame:
         indicators = [
-            {"name": "labels", "columns": ['Close', 'Open', 'High', 'Low'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
-            {"name": "Fibonacci_0", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 0, "negative": False}},
-            {"name": "Fibonacci_1", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 1, "negative": False}},
-            {"name": "Fibonacci_2", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 2, "negative": False}},
-            {"name": "Fibonacci_3", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 3, "negative": False}},
-            {"name": "Fibonacci_4", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 4, "negative": False}},
-            {"name": "Fibonacci_5", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 5, "negative": False}},
-            {"name": "Fibonacci_6", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 6, "negative": False}},
-            {"name": "Fibonacci_0_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 0, "negative": True}},
-            {"name": "Fibonacci_1_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 1, "negative": True}},
-            {"name": "Fibonacci_2_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 2, "negative": True}},
-            {"name": "Fibonacci_3_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 3, "negative": True}},
-            {"name": "Fibonacci_4_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 4, "negative": True}},
-            {"name": "Fibonacci_5_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 5, "negative": True}},
-            {"name": "Fibonacci_6_negative", "columns": ['Close', 'Open', 'High', 'Low'], "method": Fibonacci, "params": {"n": 6, "negative": True}},
-            {"name": "PolyInter", "columns": ['Close', 'Open', 'High', 'Low'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
+            {"name": "labels", "columns": ['ema_5'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
+            # {"name": "Fibonacci_0", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 0, "negative": False}},
+            # {"name": "Fibonacci_1", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 1, "negative": False}},
+            # {"name": "Fibonacci_2", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 2, "negative": False}},
+            # {"name": "Fibonacci_3", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 3, "negative": False}},
+            # {"name": "Fibonacci_4", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 4, "negative": False}},
+            # {"name": "Fibonacci_5", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 5, "negative": False}},
+            # {"name": "Fibonacci_6", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 6, "negative": False}},
+            # {"name": "Fibonacci_0_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 0, "negative": True}},
+            # {"name": "Fibonacci_1_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 1, "negative": True}},
+            # {"name": "Fibonacci_2_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 2, "negative": True}},
+            # {"name": "Fibonacci_3_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 3, "negative": True}},
+            # {"name": "Fibonacci_4_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 4, "negative": True}},
+            # {"name": "Fibonacci_5_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 5, "negative": True}},
+            # {"name": "Fibonacci_6_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 6, "negative": True}},
+            {"name": "PolyInter", "columns": ['ema_5'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
         ]
     
         
-        df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
-        df = self.convert_col_to_bool(df, ['Close', 'High', 'Low', 'Open'])
-        df = self.indicators_analysis(df, indicators)
-        df = self.col_parabolic_sar(df, ['High', 'Low'], False)
         df = self.col_ema_5(df, ['Close'])
-        df = self.col_date(df)
-        
-        columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
-        df = self.cross_bool_cols(df, columns_cross) 
+        # df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
+        df = self.convert_col_to_bool(df, ['ema_5'])
+        df = self.indicators_analysis(df, indicators)
+        # df = self.col_parabolic_sar(df, ['High', 'Low'], False)
+        # df = self.col_date(df)
+        # columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
+        # df = self.cross_bool_cols(df, columns_cross) 
         
         return df
 

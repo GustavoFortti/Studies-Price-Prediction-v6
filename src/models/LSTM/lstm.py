@@ -40,25 +40,30 @@ class LTSM_model():
         x_train, x_test, y_train, y_test = data.get_train_test()
 
         self.model = Sequential()
-        self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
-        self.model.add(Dropout(0.25))
-        self.model.add(LSTM(300, return_sequences=False))
-        self.model.add(Dropout(0.25))
 
-        self.model.add(Dense(50, activation='relu'))
-        self.model.add(Dense(30, activation='relu'))
-        self.model.add(Dense(16, activation='relu'))
+        self.model.add(LSTM(300, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
+        self.model.add(Dropout(0.20))
+        
+        self.model.add(LSTM(300, return_sequences=False))
+        self.model.add(Dropout(0.20))
+
+        self.model.add(Dense(100, activation='relu'))
+        self.model.add(Dense(100, activation='relu'))
+        self.model.add(Dense(100, activation='relu'))
         self.model.add(Dense(1))
 
         self.model.compile(loss='mse', optimizer='adam', metrics=['mean_absolute_percentage_error'])
         self.model.fit(x_train, y_train, epochs=10, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
-
-        # self.model.summary()
         self.print_graph()
-
-        
         self.model.save(self.path)
+
+    def predict(self, x) -> np.array:
+        model = tf.keras.models.load_model(self.path)
+        return model.predict(x)
+
+    def print_graph(self):
+        self.report.print_resp(self.model.predict(self.report.df_x_test), self.report.df_origin)
 
     # def regression_2(self, data: object, report: object) -> None:
     #     self.data = data
@@ -116,11 +121,3 @@ class LTSM_model():
     #     print(logical_or)
     #     tf.cond(tf.equal(greater_equal, tf.constant(True)), lambda: mse, lambda: tf.math.multiply(mse, 10))
     #     return tf.cond(logical_or, lambda: mse, lambda: tf.math.multiply(mse, 10))
-
-    def predict(self, x) -> np.array:
-        model = tf.keras.models.load_model(self.path)
-        return model.predict(x)
-
-    def print_graph(self):
-        self.report.print_resp(self.model.predict(self.report.df_x_test), self.report.df_origin, self.report.df_y_test)
-

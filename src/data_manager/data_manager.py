@@ -20,17 +20,17 @@ class Data_manager():
         data_gen = Data_generated(self.mode, self.config)
         x, y = data_gen.get_predictor(), data_gen.get_target()
         print(x.iloc[:-(self.index), :])
-        self.size = int(len(x) * self.config['model']['slice'])
 
+        self.size = int(len(x) * self.config['model']['slice'])
         self.report.set_df_origin(self.df_slice(x, True), self.df_slice(y, True))
+        x = x.drop(columns=['High', 'Low', 'Open'])
         x, y = self.pre_shape_data(x, y, self.config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
-        
         self.report.set_df_test(self.df_slice(x, True), self.df_slice(y, True))
         self.x, self.y = self.df_slice(x), self.df_slice(y)
-
         if (self.mode == 'tr'): self.adjust_data()
 
     def df_slice(self, df: pd.DataFrame = None, is_reverse_tr: bool = False) -> pd.DataFrame:
+        df = deepcopy(df)
         if (self.size < self.index): 
             print("Error: index > size")
             sys.exit()
@@ -75,6 +75,10 @@ class Data_manager():
         self.x_train, self.x_test, y_train, y_test = train_test_split(self.x, self.y, test_size=split, random_state=46)
         if (self.config['model']['model_type'] == 1): self.y_train, self.y_test = tf.keras.utils.to_categorical(y_train, len(categorical)), tf.keras.utils.to_categorical(y_test, len(categorical)) 
         else: self.y_train, self.y_test = y_train, y_test
+        print('\nshape...')
+        print("x " + str(self.x_train.shape))
+        print("y " + str(self.y_train.shape))
+        print('\n')
 
     def get_train_test(self):
         return self.x_train, self.x_test, self.y_train, self.y_test
