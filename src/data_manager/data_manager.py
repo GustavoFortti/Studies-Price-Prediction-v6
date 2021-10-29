@@ -23,7 +23,6 @@ class Data_manager():
 
         self.size = int(len(x) * self.config['model']['slice'])
         self.report.set_df_origin(self.df_slice(x, True), self.df_slice(y, True))
-        x = x.drop(columns=['High', 'Low', 'Open'])
         x, y = self.pre_shape_data(x, y, self.config['data']['timesteps'], data_gen.get_reduce()) # novo shape para o dataframe - 3 dimensões
         self.report.set_df_test(self.df_slice(x, True), self.df_slice(y, True))
         self.x, self.y = self.df_slice(x), self.df_slice(y)

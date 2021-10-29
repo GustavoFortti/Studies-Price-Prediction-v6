@@ -57,9 +57,10 @@ class Inticators_manager():
     
         
         df = self.col_ema_5(df, ['Close'])
+        df = df.drop(columns=['High', 'Low', 'Open', 'Volume'])
         # df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
-        df = self.convert_col_to_bool(df, ['ema_5'])
-        df = self.indicators_analysis(df, indicators)
+        # df = self.convert_col_to_bool(df, ['ema_5'])
+        # df = self.indicators_analysis(df, indicators)
         # df = self.col_parabolic_sar(df, ['High', 'Low'], False)
         # df = self.col_date(df)
         # columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
