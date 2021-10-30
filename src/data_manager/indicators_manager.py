@@ -3,6 +3,7 @@ import sys
 from copy import deepcopy
 import numpy as np
 import pandas as pd
+from pandas.core.frame import DataFrame
 import ta
 
 from src.data_manager.indicators_analysis.generate_labels import Genlabels
@@ -17,12 +18,12 @@ class Inticators_manager():
         self.config = config
         self.is_predict = is_predict
 
-    def generate(self, df) -> pd.DataFrame:
+    def generate(self, df: DataFrame) -> pd.DataFrame:
         df = deepcopy(df)
         if (self.is_predict): return self.prediction(df)
         else: return self.target(df)
             
-    def target(self, df) -> pd.DataFrame:
+    def target(self, df: DataFrame) -> pd.DataFrame:
         if (self.config['model']['model_type'] == 1):
             ax_df = df.loc[:, self.config['data']['target']['columns']]
             ax_df = self.convert_col_to_bool(ax_df, ax_df.columns)
@@ -35,7 +36,7 @@ class Inticators_manager():
         if (time_ahead > 0): df = df.iloc[time_ahead:, :]
         return df
 
-    def prediction(self, df) -> pd.DataFrame:
+    def prediction(self, df: DataFrame) -> pd.DataFrame:
         indicators = [
             {"name": "labels", "columns": ['ema_5'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
             # {"name": "Fibonacci_0", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 0, "negative": False}},
@@ -58,16 +59,17 @@ class Inticators_manager():
         
         df = self.col_ema_5(df, ['Close'])
         # df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
-        df = self.convert_col_to_bool(df, ['ema_5'])
-        df = self.indicators_analysis(df, indicators)
+        # df = self.convert_col_to_bool(df, ['ema_5'])
+        # df = self.indicators_analysis(df, indicators)
         # df = self.col_parabolic_sar(df, ['High', 'Low'], False)
         # df = self.col_date(df)
         # columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
         # df = self.cross_bool_cols(df, columns_cross) 
-        
+        print(df)
+
         return df
 
-    def convert_col_to_bool(self, df, cols) -> pd.DataFrame:
+    def convert_col_to_bool(self, df: DataFrame, cols: list) -> pd.DataFrame:
         df = deepcopy(df)
         to_left = 0 if not self.is_predict else -1
 
@@ -87,7 +89,7 @@ class Inticators_manager():
 
         return df        
 
-    def cross_bool_cols(self, df, cols) -> pd.DataFrame:
+    def cross_bool_cols(self, df: DataFrame, cols: list) -> pd.DataFrame:
         df = deepcopy(df)
         for i in cols:
             ax_df = [ 1 if j == len(i) else -1 if j == 0 else 0 for j in df.loc[:, i].sum(axis=1)]
@@ -96,25 +98,25 @@ class Inticators_manager():
 
         return df
 
-    def indicators_analysis(self, df, indicators) -> pd.DataFrame:
+    def indicators_analysis(self, df: DataFrame, indicators: list) -> pd.DataFrame:
         df = deepcopy(df)
         for i in indicators:
             for j in i['columns']:
                 df[(j + '_' + i['name'])] = i['method'](df[j], i['params']).get_values()
         return df
 
-    def col_parabolic_sar(self, df, cols, bool_col, params={"af":0.02, "amax":0.2}, name='parabolic_sar') -> pd.DataFrame:
+    def col_parabolic_sar(self, df: DataFrame, cols: list, bool_col: list, params: dict={"af":0.02, "amax":0.2}, name: str='parabolic_sar') -> pd.DataFrame:
         df = deepcopy(df)
         df[name] = Parabolic_sar(df.loc[:, cols], params, cols[0], cols[1]).values
         return df
 
-    def col_ema_5(self, df, cols, params=5, name='ema_5') -> pd.DataFrame:
+    def col_ema_5(self, df: DataFrame, cols: list, params: int=5, name: str='ema_5') -> pd.DataFrame:
         df = deepcopy(df)
         ema = Ema(params)
         df[name] = ema.calc_ema(df[cols].values)
         return df
 
-    def col_date(self, df) -> pd.DataFrame:
+    def col_date(self, df: DataFrame) -> pd.DataFrame:
         df = deepcopy(df)
         date = Date_time(df)
         df['weekday'] = date.Date()

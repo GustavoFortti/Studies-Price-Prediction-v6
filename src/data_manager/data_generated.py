@@ -3,6 +3,7 @@ import sys
 from copy import deepcopy
 from datetime import datetime
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 from src.data_manager.indicators_manager import Inticators_manager
 from src.services.api import Api_market
@@ -26,10 +27,10 @@ class Data_generated():
         self.target = self.generate_data(deepcopy(self.predictor), False)
         if (self.mode == 'gd'): sys.exit()
         
-    def read_data(self, file) -> pd.DataFrame:
+    def read_data(self, file: str) -> pd.DataFrame:
         return pd.read_csv(self.path + file + '.csv', index_col='Date')
 
-    def generate_data(self, data, is_predict) -> pd.DataFrame:
+    def generate_data(self, data: DataFrame, is_predict: bool) -> pd.DataFrame:
         indicators = Inticators_manager(is_predict, self.config)
 
         if (not is_predict): return indicators.generate(data)

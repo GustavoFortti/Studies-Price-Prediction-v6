@@ -26,7 +26,9 @@ class Pred_report():
             pred = self.scaler['target'].inverse_transform(pred)
 
         if (self.mode == 'pr'): print(pred)
-        if ((self.config['model']['model_type'] == 2) & (self.mode in ['te', 'tr'])): self.plot_regression(df_origin, pred)
+        if ((self.config['model']['model_type'] == 2) & (self.mode in ['te', 'tr'])): 
+            return r2_score(df_origin['target'], pred)
+            # return self.plot_regression(df_origin, pred)
 
     def plot_regression(self, df_origin, pred):
         df = df_origin
@@ -50,7 +52,7 @@ class Pred_report():
         slice_i = int(self.config['name'][-1:]) + 1
         df['day_predict'] = np.append([str(i)[:10] for i in index[slice_i:]], [str(timedelta(days=slice_i) + i)[:10] for i in index[-slice_i:]])
 
-        print(df)
+        return r2_score(df['target'], df['pred'])
         self.graph_analysis(index, df)
         # for i in range(1, (len(df) + 1), 25):
         #     print("====================================================================")
@@ -69,7 +71,7 @@ class Pred_report():
         df.to_csv('./notebooks/data/' + name , index=False)
         print('\n')
         print(df)
-
+    
     def graph_analysis(self, index, df):
         def adjusted_r2(y_test, y_pred, n_features):
             adj_r2 = (1 - ((1 - r2_score(y_test, y_pred)) * (len(y_test) - 1)) / (len(y_test) - n_features - 1))
