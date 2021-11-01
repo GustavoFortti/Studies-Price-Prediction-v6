@@ -38,34 +38,25 @@ class Inticators_manager():
 
     def prediction(self, df: DataFrame) -> pd.DataFrame:
         indicators = [
-            {"name": "labels", "columns": ['ema_5'], "method": Genlabels, "params": {"window": 25, "polyorder": 3}},
-            # {"name": "Fibonacci_0", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 0, "negative": False}},
-            # {"name": "Fibonacci_1", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 1, "negative": False}},
-            # {"name": "Fibonacci_2", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 2, "negative": False}},
-            # {"name": "Fibonacci_3", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 3, "negative": False}},
-            # {"name": "Fibonacci_4", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 4, "negative": False}},
-            # {"name": "Fibonacci_5", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 5, "negative": False}},
-            # {"name": "Fibonacci_6", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 6, "negative": False}},
-            # {"name": "Fibonacci_0_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 0, "negative": True}},
-            # {"name": "Fibonacci_1_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 1, "negative": True}},
-            # {"name": "Fibonacci_2_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 2, "negative": True}},
-            # {"name": "Fibonacci_3_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 3, "negative": True}},
-            # {"name": "Fibonacci_4_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 4, "negative": True}},
-            # {"name": "Fibonacci_5_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 5, "negative": True}},
-            # {"name": "Fibonacci_6_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 6, "negative": True}},
-            {"name": "PolyInter", "columns": ['ema_5'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
+            {"name": "labels", "columns": ['ema_12_Close'], "method": Genlabels, "params": {"window": 29, "polyorder": 3}},
+            {"name": "PolyInter", "columns": ['ema_12_Close'], "method": PolyInter, "params": {"degree":4, "pd":20, "plot":False, "progress_bar":True}},
         ]
-    
         
-        df = self.col_ema_5(df, ['Close'])
+        # df = self.col_ema(df, ['Close', 'High', 'Low', 'Open'], params=9)
+        # df = self.col_ema(df, ['Close', 'High', 'Low', 'Open'], params=5)
+        df = self.col_ema(df, ['Close'], params=12)
+
         # df = ta.add_all_ta_features(df=df, close="Close", high='High', low='Low', open="Open", volume="Volume", fillna=True)
-        # df = self.convert_col_to_bool(df, ['ema_5'])
-        # df = self.indicators_analysis(df, indicators)
-        # df = self.col_parabolic_sar(df, ['High', 'Low'], False)
+
+        df = self.convert_col_to_bool(df, ['ema_12_Close'])
+        df = self.indicators_analysis(df, indicators)
+        # df = self.col_parabolic_sar(df, ['ema_5_High', 'ema_5_Low'], False)
+
+        print(df)
+        # sys.exit()
         # df = self.col_date(df)
         # columns_cross = [['High_bool', 'Low_bool'], ['Close_bool', 'Open_bool'], ['High_bool', 'Low_bool', 'Close_bool', 'Open_bool']]
         # df = self.cross_bool_cols(df, columns_cross) 
-        print(df)
 
         return df
 
@@ -110,10 +101,12 @@ class Inticators_manager():
         df[name] = Parabolic_sar(df.loc[:, cols], params, cols[0], cols[1]).values
         return df
 
-    def col_ema_5(self, df: DataFrame, cols: list, params: int=5, name: str='ema_5') -> pd.DataFrame:
-        df = deepcopy(df)
-        ema = Ema(params)
-        df[name] = ema.calc_ema(df[cols].values)
+    def col_ema(self, df: DataFrame, cols: list, params: int=5, name: str='ema') -> pd.DataFrame:
+        for i in cols:
+            df = deepcopy(df)
+            ema = Ema(params)
+            df[f'{name}_{str(params)}_{i}'] = ema.calc_ema(df[i].values)
+
         return df
 
     def col_date(self, df: DataFrame) -> pd.DataFrame:

@@ -1,6 +1,6 @@
 from random import randint
 import sys
-
+import time
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -40,36 +40,37 @@ class LTSM_model():
 
         self.model.fit(x_train, y_train, epochs=self.epochs, batch_size=28, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
-    def regression(self, data: object, report: object) -> None:
+    def regression_(self, data: object, report: object) -> None:
         gene_structure = {
             "dropout": {
-                "range": (0.20, 0.50),
-                "size": 3
+                "range": (0.20, 0.35),
+                "size": 2
             },
             "LSTMneurons": {
-                "range": (10, 100),
-                "size": 3
+                "range": (40, 80),
+                "size": 2
             },
             "DENSEneurons": {
-                "range": (10, 100),
-                "size": 3
+                "range": (5, 20),
+                "size": 5
             },
-            "activation": {
-                "range": ['relu', 'sigmoid', 'softmax', 'softplus', 'softsign', 'tanh', 'selu', 'elu', 'exponential'],
-                "size": 3
-            }
+            # "activation": {
+            #     "range": ['relu', 'sigmoid', 'softmax', 'softplus', 'softsign', 'tanh', 'selu', 'elu', 'exponential'],
+            #     "size": 3
+            # }
         }
 
-        size = 20
 
+        size = 20
         ga = genetict_algorithm(gene_structure, size)
         max_score = 0.0
         i = 0
-        while (max_score < 0.9):
+        while (max_score < 0.95):
             print(f'\generation {str(i)}')
             score = []
             j = 0
             for k in ga.population:
+                t = time.time()
                 print(f'\ntrain {str(j)}')
                 print(k)
                 f = open('model.txt', 'a')
@@ -80,6 +81,8 @@ class LTSM_model():
                 print("\nscore")
                 print(score)
                 j = j + 1
+                print(time.time() - t)
+
             ga.evolution(score)
             max_score = np.amax(score)
             print(max_score)
@@ -91,22 +94,21 @@ class LTSM_model():
         x_train, x_test, y_train, y_test = data.get_train_test()
 
         self.model = Sequential()
-        self.model.add(LSTM(params[3]['LSTMneurons_0'], return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
+        self.model.add(LSTM(params[2]['LSTMneurons_0'], return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
         self.model.add(Dropout(params[0]['dropout_0']))
 
-        self.model.add(LSTM(params[4]['LSTMneurons_1'], return_sequences=True))
+        self.model.add(LSTM(params[3]['LSTMneurons_1'], return_sequences=False))
         self.model.add(Dropout(params[1]['dropout_1']))
 
-        self.model.add(LSTM(params[5]['LSTMneurons_2'], return_sequences=False))
-        self.model.add(Dropout(params[2]['dropout_2']))
-
-        self.model.add(Dense(params[6]['DENSEneurons_0'], activation='tanh'))
-        self.model.add(Dense(params[7]['DENSEneurons_1'], activation='tanh'))
-        self.model.add(Dense(params[8]['DENSEneurons_2'], activation='tanh'))
+        self.model.add(Dense(params[4]['DENSEneurons_0'], activation='tanh'))
+        self.model.add(Dense(params[5]['DENSEneurons_1'], activation='tanh'))
+        self.model.add(Dense(params[6]['DENSEneurons_2'], activation='tanh'))
+        self.model.add(Dense(params[7]['DENSEneurons_3'], activation='tanh'))
+        self.model.add(Dense(params[8]['DENSEneurons_4'], activation='tanh'))
         self.model.add(Dense(1))
-
-        self.model.compile(loss='mse', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=3, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        
+        self.model.compile(loss='mse', optimizer=Adam(learning_rate=0.001), metrics=['mean_absolute_percentage_error'])
+        self.model.fit(x_train, y_train, epochs=1000, batch_size=1200, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
         return self.print_graph() # score
         # self.model.save(self.path)
@@ -118,20 +120,21 @@ class LTSM_model():
 
         self.model = Sequential()
 
-        self.model.add(LSTM(100, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
+        self.model.add(LSTM(64, return_sequences=True, activation='tanh', input_shape=(x_train.shape[1], x_train.shape[2])))
         self.model.add(Dropout(0.20))
 
-        self.model.add(LSTM(100, return_sequences=False))
+        self.model.add(LSTM(64, return_sequences=False, activation='tanh'))
         self.model.add(Dropout(0.20))
 
-        self.model.add(Dense(50, activation='tanh'))
-        self.model.add(Dense(50, activation='tanh'))
-        self.model.add(Dense(50, activation='tanh'))
-        self.model.add(Dense(50, activation='tanh'))
+        self.model.add(Dense(12, activation='tanh'))
+        self.model.add(Dense(12, activation='tanh'))
+        self.model.add(Dense(12, activation='tanh'))
+        self.model.add(Dense(12, activation='tanh'))
+        self.model.add(Dense(12, activation='tanh'))
         self.model.add(Dense(1))
 
-        self.model.compile(loss='mse', optimizer='adam', metrics=['mean_absolute_percentage_error'])
-        self.model.fit(x_train, y_train, epochs=10, batch_size=42, shuffle=True, validation_data=(x_test, y_test), verbose=1)
+        self.model.compile(loss='mse', optimizer=Adam(learning_rate=0.005), metrics=['mean_absolute_percentage_error'])
+        self.model.fit(x_train, y_train, epochs=1000, batch_size=1200, shuffle=True, validation_data=(x_test, y_test), verbose=1)
 
         score = self.print_graph()
         print(score)

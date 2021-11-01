@@ -27,8 +27,10 @@ class Pred_report():
 
         if (self.mode == 'pr'): print(pred)
         if ((self.config['model']['model_type'] == 2) & (self.mode in ['te', 'tr'])): 
-            return r2_score(df_origin['target'], pred)
-            # return self.plot_regression(df_origin, pred)
+            # return r2_score(df_origin['target'], pred)
+            self.plot_regression(df_origin, pred)
+
+        return 0
 
     def plot_regression(self, df_origin, pred):
         df = df_origin
@@ -52,7 +54,6 @@ class Pred_report():
         slice_i = int(self.config['name'][-1:]) + 1
         df['day_predict'] = np.append([str(i)[:10] for i in index[slice_i:]], [str(timedelta(days=slice_i) + i)[:10] for i in index[-slice_i:]])
 
-        return r2_score(df['target'], df['pred'])
         self.graph_analysis(index, df)
         # for i in range(1, (len(df) + 1), 25):
         #     print("====================================================================")
@@ -82,7 +83,7 @@ class Pred_report():
             print("RMSE = " + str(mean_squared_error(df['target'], df['pred'], squared=False)))
             print("MAPE = " + str(mean_absolute_percentage_error(df['target'], df['pred']) * 100))
             print("R2 = " + str(r2_score(df['target'], df['pred'])))
-            print("adjust R2 = " + str(adjusted_r2(df['target'], df['pred'], 105)))
+            print("adjust R2 = " + str(adjusted_r2(df['target'], df['pred'], 5)))
             print("RMSLE = " + str(mean_squared_log_error(df['target'], df['pred'])))
             print("max_error = " + str(max_error(df['target'], df['pred'])))
             print("explained_variance_score = " + str(explained_variance_score(df['target'], df['pred'])))

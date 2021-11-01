@@ -1,6 +1,9 @@
 import numpy as np
 from pandas import DataFrame
 
+# exemple
+# {"name": "Fibonacci_6", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 6, "negative": False}},
+# {"name": "Fibonacci_0_negative", "columns": ['ema_5'], "method": Fibonacci, "params": {"n": 0, "negative": True}},
 class Fibonacci():
     def __init__(self, data: DataFrame, params: dict={'n': 1, 'negative': False}):
         n = params['n']
